@@ -94,12 +94,12 @@
       <section class="intro" aria-labelledby="page-title">
         <p class="eyebrow">thai lottery · astrology fun</p>
         <h1 id="page-title">เลขของคุณ<br /><em>วันนี้</em></h1>
-        <p class="lede">ใส่ข้อมูลนิดหน่อย แล้วให้สูตรโหราศาสตร์ไทยฉบับขำๆ ช่วยจัดชุดเลขสำหรับหวยไทยงวดนี้</p>
-        <div class="note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 10v6M12 7.5h.01"/></svg><span>ระบบใช้ข้อมูลเป็น seed เพื่อให้ทุกเลขมีเรื่องเล่า แต่ไม่ได้ทำนายผลสลากจริง โปรดซื้ออย่างพอดี</span></div>
+        <p class="lede">กรอกครั้งเดียว แล้วหมุนเลขหวยไทยเล่นๆ</p>
+        <div class="note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 10v6M12 7.5h.01"/></svg><span>ข้อมูลเก็บในเครื่องนี้เท่านั้น · ไม่ใช่การทำนายผลจริง</span></div>
       </section>
 
       <section class="card form-card" aria-labelledby="form-title">
-        <div class="card-title"><h2 id="form-title">ข้อมูลเจ้าของเลข</h2><span class="section-label mono">01 / 02</span></div>
+        <div class="card-title"><h2 id="form-title">ข้อมูลของคุณ</h2><span class="section-label mono" id="save-status">บันทึกในเครื่อง</span></div>
         <form id="lottery-form">
           <div class="fields">
             <label>วันเกิด<input id="birth-day" type="number" min="1" max="31" placeholder="เช่น 14" required /></label>
@@ -116,11 +116,11 @@
       <section class="card result-card" aria-live="polite" aria-labelledby="result-title">
         <div class="result-top"><span id="result-title" class="mono">YOUR LUCKY SET</span><strong id="result-date">ยังไม่ได้หมุน</strong></div>
         <div class="numbers" id="numbers"><span class="number">?</span><span class="number">?</span><span class="number">?</span><span class="number">?</span><span class="number">?</span><span class="number">?</span></div>
-        <p class="result-caption" id="result-caption">เลข 6 หลักของคุณจะปรากฏตรงนี้<br />กรอกข้อมูลทางซ้ายแล้วกด <b>หมุนเลขให้หน่อย</b></p>
+        <p class="result-caption" id="result-caption">กรอกข้อมูล แล้วกดหมุนเลข</p>
         <div class="meta-row" id="meta-row"><span class="tag">ยังไม่มีข้อมูล</span></div>
       </section>
 
-      <section class="card history"><div><h3>เลขที่เคยหมุน</h3><p>เก็บไว้ดูย้อนหลังในรอบนี้</p></div><div class="history-list" id="history-list"><span class="micro">ยังไม่มีประวัติ</span></div></section>
+      <section class="card history"><div><h3>ประวัติเลข</h3><p>เลขล่าสุดในรอบนี้</p></div><div class="history-list" id="history-list"><span class="micro">ยังไม่มีประวัติ</span></div></section>
     </main>
     <footer>เลขขำๆ เท่านั้น — ขอให้สนุกกับการลุ้นอย่างมีสติ</footer>
   </div>
@@ -133,7 +133,43 @@
     const meta = document.querySelector('#meta-row');
     const historyEl = document.querySelector('#history-list');
     const history = [];
-    const pad = (n) => String(n).padStart(2, '0');
+    const saveStatus = document.querySelector('#save-status');
+    const DB_NAME = 'thai-lottery-spin';
+    const STORE_NAME = 'profile';
+    function openProfileDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, 1);
+        request.onupgradeneeded = () => request.result.createObjectStore(STORE_NAME);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+    async function saveProfile() {
+      try {
+        const db = await openProfileDB();
+        const values = { day: dayInput.value, month: monthInput.value, year: yearInput.value, gender: document.querySelector('#gender').value, zodiac: document.querySelector('#zodiac').value };
+        db.transaction(STORE_NAME, 'readwrite').objectStore(STORE_NAME).put(values, 'default');
+        saveStatus.textContent = 'บันทึกแล้ว';
+      } catch { saveStatus.textContent = 'บันทึกในเครื่อง'; }
+    }
+    async function loadProfile() {
+      try {
+        const db = await openProfileDB();
+        const request = db.transaction(STORE_NAME, 'readonly').objectStore(STORE_NAME).get('default');
+        request.onsuccess = () => {
+          const values = request.result;
+          if (!values) return;
+          dayInput.value = values.day || '';
+          monthInput.value = values.month || '';
+          yearInput.value = values.year || '';
+          document.querySelector('#gender').value = values.gender || '';
+          document.querySelector('#zodiac').value = values.zodiac || '';
+          updateAge();
+          saveStatus.textContent = 'ข้อมูลเดิม';
+        };
+      } catch { saveStatus.textContent = 'บันทึกในเครื่อง'; }
+    }
+
     const dayInput = document.querySelector('#birth-day');
     const monthInput = document.querySelector('#birth-month');
     const yearInput = document.querySelector('#birth-year');
@@ -155,7 +191,9 @@
       ageInput.value = Math.max(0, age);
       ageInput.placeholder = 'คำนวณแล้ว';
     }
-    [dayInput, monthInput, yearInput].forEach(input => input.addEventListener('input', updateAge));
+    [dayInput, monthInput, yearInput].forEach(input => input.addEventListener('input', () => { updateAge(); saveProfile(); }));
+    [document.querySelector('#gender'), document.querySelector('#zodiac')].forEach(input => input.addEventListener('change', saveProfile));
+    loadProfile();
     const hashSeed = (text) => { let h = 2166136261; for (let i = 0; i < text.length; i++) { h ^= text.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
     const randomFrom = (seed) => { seed = (seed * 1664525 + 1013904223) >>> 0; return [seed, seed / 4294967296]; };
     const formatDate = () => new Intl.DateTimeFormat('th-TH', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date());
