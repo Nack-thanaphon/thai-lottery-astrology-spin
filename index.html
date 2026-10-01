@@ -3,236 +3,610 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>หวยไทยขำๆ — Lucky Spin</title>
-  <meta name="description" content="วงล้อสุ่มเลขเล่นๆ จากข้อมูลวันเกิด" />
+  <title>ดวงเลขนำโชค — วงล้อเลขมงคลประจำวัน</title>
+  <meta name="description" content="หมุนเลขนำโชคประจำวันจากวันเกิด ปีนักษัตร และวันประจำตัว สนุกๆ ไม่ใช่คำทำนายจริง" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js" defer></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap');
     :root {
-      --paper: #f5efe4;
-      --paper-deep: #ebe1d1;
-      --ink: #1c1a17;
-      --muted: #746d63;
-      --line: #d7cbbb;
-      --brick: #b44c35;
-      --brick-dark: #843722;
-      --green: #63745d;
-      --white: #fffdf8;
-      --shadow: 0 18px 45px rgba(73, 48, 29, .13);
+      --night: #0e0c1b;
+      --night-2: #17142b;
+      --panel: rgba(28, 24, 52, .72);
+      --panel-border: rgba(232, 184, 96, .18);
+      --gold: #e8b860;
+      --gold-soft: #f6dca4;
+      --vermilion: #e0573c;
+      --text: #f4efe6;
+      --muted: #a69fb8;
+      --field: rgba(255, 255, 255, .05);
+      --field-border: rgba(255, 255, 255, .12);
+      --radius: 20px;
+      --shadow: 0 24px 60px rgba(0, 0, 0, .45);
     }
     * { box-sizing: border-box; }
-    html { background: var(--paper); }
+    html { background: var(--night); }
     body {
       margin: 0;
       min-width: 320px;
-      color: var(--ink);
-      background:
-        radial-gradient(circle at 10% 0%, rgba(180, 76, 53, .08), transparent 29rem),
-        var(--paper);
-      font-family: 'Noto Sans Thai', system-ui, sans-serif;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: 'IBM Plex Sans Thai', system-ui, sans-serif;
       font-size: 16px;
+      line-height: 1.6;
+      background: var(--night);
     }
-    .page { width: min(1120px, calc(100% - 36px)); margin: 0 auto; padding: 28px 0 48px; }
-    header { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-bottom: 28px; border-bottom: 1px solid var(--line); }
-    .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: -.03em; }
-    .brand-mark { width: 38px; height: 38px; display: grid; place-items: center; background: var(--brick); color: var(--white); border-radius: 50%; box-shadow: 4px 4px 0 var(--brick-dark); }
-    .brand-mark svg { width: 20px; height: 20px; }
-    .micro { margin: 0; color: var(--muted); font-size: 13px; }
-    .mono { font-family: 'DM Mono', monospace; }
-    main { display: grid; grid-template-columns: .9fr 1.1fr; gap: 24px; padding-top: 46px; }
-    .intro { padding: 12px 0; }
-    .eyebrow { display: inline-block; margin: 0 0 18px; color: var(--brick-dark); font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: .11em; text-transform: uppercase; }
-    h1 { max-width: 520px; margin: 0; font-size: clamp(42px, 7vw, 82px); line-height: .97; letter-spacing: -.08em; font-weight: 800; }
-    h1 em { color: var(--brick); font-style: normal; }
-    .lede { max-width: 450px; margin: 24px 0 0; color: var(--muted); font-size: 18px; line-height: 1.8; }
-    .note { display: flex; align-items: flex-start; gap: 10px; max-width: 430px; margin-top: 34px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; line-height: 1.7; }
-    .note svg { flex: 0 0 auto; width: 17px; margin-top: 3px; color: var(--brick); }
-    .card { background: rgba(255,253,248,.7); border: 1px solid var(--line); border-radius: 20px; box-shadow: var(--shadow); }
+    .page { position: relative; width: min(1140px, calc(100% - 36px)); margin: 0 auto; padding: 28px 0 40px; }
+
+    header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .brand { display: flex; align-items: center; gap: 12px; font-family: 'Kanit', sans-serif; font-weight: 600; font-size: 18px; }
+    .brand-mark { width: 40px; height: 40px; display: grid; place-items: center; color: var(--night); background: var(--gold); border-radius: 12px; }
+    .brand-mark svg { width: 22px; height: 22px; }
+    .pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; color: var(--muted); border: 1px solid rgba(255,255,255,.1); border-radius: 999px; font-size: 13px; }
+    .pill svg { width: 14px; height: 14px; color: var(--gold); }
+
+    main { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; padding-top: 40px; }
+    .intro { grid-column: 1 / -1; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-bottom: 6px; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 12px; color: var(--gold); font-size: 14px; font-weight: 600; }
+    .eyebrow svg { width: 16px; height: 16px; }
+    h1 { margin: 0; font-family: 'Kanit', sans-serif; font-size: clamp(38px, 6vw, 64px); line-height: 1.1; font-weight: 700; }
+    h1 em { font-style: normal; color: var(--gold); }
+    .lede { max-width: 440px; margin: 0; color: var(--muted); font-size: 17px; }
+
+    .card { position: relative; background: var(--panel); border: 1px solid var(--panel-border); border-radius: var(--radius); box-shadow: var(--shadow); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+    .card-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 20px; }
+    h2 { display: flex; align-items: center; gap: 10px; margin: 0; font-family: 'Kanit', sans-serif; font-size: 21px; font-weight: 600; }
+    h2 svg { width: 20px; height: 20px; color: var(--gold); }
+    .save-status { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; transition: color .3s; }
+    .save-status svg { width: 14px; height: 14px; }
+    .save-status.is-saved { color: #8fd4a4; }
+
     .form-card { padding: 26px; }
-    .card-title { display: flex; justify-content: space-between; align-items: baseline; gap: 15px; margin-bottom: 22px; }
-    h2 { margin: 0; font-size: 22px; letter-spacing: -.04em; }
-    .section-label { color: var(--muted); font-size: 12px; }
-    .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    label { display: grid; gap: 7px; color: var(--muted); font-size: 13px; font-weight: 600; }
-    input, select { width: 100%; min-height: 48px; padding: 0 13px; color: var(--ink); background: var(--white); border: 1px solid #cdbfac; border-radius: 10px; font: inherit; outline: none; }
-    input:focus, select:focus { border-color: var(--brick); box-shadow: 0 0 0 3px rgba(180,76,53,.13); }
+    .fields { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
     .full { grid-column: 1 / -1; }
-    .spin-button { position: relative; width: 100%; min-height: 58px; margin-top: 22px; display: flex; align-items: center; justify-content: center; gap: 12px; border: 0; border-radius: 10px; color: var(--white); background: var(--brick); font: inherit; font-weight: 800; cursor: pointer; transition: transform .18s, background .18s; }
-    .spin-button:hover { background: var(--brick-dark); transform: translateY(-2px); }
+    .half { grid-column: span 3; }
+    label { display: grid; gap: 7px; color: var(--muted); font-size: 13px; font-weight: 500; }
+    .hint { color: rgba(166,159,184,.7); font-size: 12px; font-weight: 400; }
+    input, select {
+      width: 100%; min-height: 48px; padding: 0 14px;
+      color: var(--text); background: var(--field);
+      border: 1px solid var(--field-border); border-radius: 12px;
+      font: inherit; font-size: 15px; outline: none;
+      transition: border-color .2s, box-shadow .2s, background .2s;
+    }
+    select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23a69fb8' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+    select option { color: #111; }
+    input:focus, select:focus { border-color: var(--gold); background-color: rgba(232,184,96,.06); box-shadow: 0 0 0 3px rgba(232,184,96,.15); }
+    input[readonly] { color: var(--gold-soft); background-color: rgba(232,184,96,.06); border-style: dashed; }
+    input:user-invalid, select:user-invalid { border-color: var(--vermilion); }
+
+    .birth-insight { display: none; align-items: center; gap: 10px; margin-top: 16px; padding: 12px 14px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); border-radius: 12px; font-size: 14px; color: var(--muted); }
+    .birth-insight.is-visible { display: flex; }
+    .birth-insight b { color: var(--text); }
+    .day-dot { flex: 0 0 auto; width: 14px; height: 14px; border-radius: 50%; box-shadow: 0 0 12px currentColor; }
+
+    .spin-button {
+      position: relative; overflow: hidden;
+      width: 100%; min-height: 58px; margin-top: 20px;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      border: 0; border-radius: 14px;
+      color: var(--night); background: var(--gold);
+      font-family: 'Kanit', sans-serif; font-size: 18px; font-weight: 600;
+      cursor: pointer;
+      transition: transform .18s, background .18s, filter .18s;
+    }
+    .spin-button:hover { transform: translateY(-2px); background: var(--gold-soft); }
     .spin-button:active { transform: translateY(1px); }
-    .spin-button:disabled { cursor: wait; opacity: .75; }
-    .spin-button svg { width: 20px; }
-    .result-card { position: relative; min-height: 100%; padding: 28px; overflow: hidden; background: var(--ink); color: var(--white); border: 0; }
-    .result-card::after { content: ''; position: absolute; width: 300px; height: 300px; right: -120px; bottom: -130px; border: 1px solid rgba(255,255,255,.14); border-radius: 50%; box-shadow: 0 0 0 28px rgba(255,255,255,.035), 0 0 0 56px rgba(255,255,255,.025); }
-    .result-top { position: relative; z-index: 1; display: flex; justify-content: space-between; gap: 16px; color: #bdb5aa; font-size: 13px; }
-    .result-top strong { color: #f5c3a7; font-weight: 600; }
-    .numbers { position: relative; z-index: 1; display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin: 54px 0 34px; }
-    .number { width: 76px; height: 94px; display: grid; place-items: center; color: var(--ink); background: var(--paper); border-radius: 13px; font-family: 'DM Mono', monospace; font-size: 42px; font-weight: 500; box-shadow: 5px 5px 0 rgba(180,76,53,.8); }
-    .number.is-spinning { animation: flip .22s linear infinite; }
-    @keyframes flip { 0% { transform: translateY(0) rotateX(0); } 50% { transform: translateY(-6px) rotateX(90deg); } 100% { transform: translateY(0) rotateX(180deg); } }
-    .result-caption { position: relative; z-index: 1; max-width: 430px; color: #bdb5aa; line-height: 1.7; }
-    .result-caption b { color: var(--white); }
-    .number-groups { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 0 0 25px; }
-    .result-group { padding: 12px 10px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.13); border-radius: 10px; }
-    .result-group span { display: block; color: #bdb5aa; font-size: 11px; }
-    .result-group strong { display: block; margin-top: 3px; color: #f5c3a7; font-family: 'DM Mono', monospace; font-size: 25px; font-weight: 500; letter-spacing: .04em; }
-    .result-group.main { background: rgba(180,76,53,.22); border-color: rgba(245,195,167,.3); }
-    .meta-row { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 27px; }
-    .tag { padding: 7px 10px; color: #d9cfc2; border: 1px solid rgba(255,255,255,.16); border-radius: 999px; font-size: 12px; }
-    .history { grid-column: 1 / -1; padding: 21px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-    .history h3 { margin: 0 0 4px; font-size: 16px; }
-    .history p { margin: 0; color: var(--muted); font-size: 13px; }
+    .spin-button:disabled { cursor: wait; filter: saturate(.6) brightness(.9); transform: none; }
+    .spin-button svg { width: 20px; height: 20px; }
+    .spin-button:disabled svg { animation: rotate 0.8s linear infinite; }
+    @keyframes rotate { to { transform: rotate(360deg); } }
+
+    .result-card { padding: 26px; overflow: hidden; display: flex; flex-direction: column; }
+    .result-card::before { content: ''; position: absolute; width: 380px; height: 380px; right: -160px; top: -160px; border-radius: 50%; border: 1px dashed rgba(232,184,96,.18); box-shadow: 0 0 0 40px rgba(232,184,96,.03), 0 0 0 80px rgba(232,184,96,.02); pointer-events: none; }
+    .result-date { color: var(--gold-soft); font-size: 13px; }
+
+    .reels { position: relative; display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin: 10px 0 22px; }
+    .reel {
+      position: relative; height: 92px; overflow: hidden;
+      background: #f6ecd6;
+      border-radius: 14px;
+      box-shadow: inset 0 -6px 0 rgba(0,0,0,.08), 0 6px 0 rgba(224,87,60,.85), 0 12px 24px rgba(0,0,0,.35);
+    }
+    .reel-strip { will-change: transform; }
+    .reel-cell { height: 92px; display: grid; place-items: center; color: var(--night); font-family: 'JetBrains Mono', monospace; font-size: 44px; font-weight: 700; }
+
+    .groups { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .group { padding: 12px 14px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); border-radius: 14px; }
+    .group span { display: block; color: var(--muted); font-size: 12px; }
+    .group strong { display: block; margin-top: 2px; color: var(--gold-soft); font-family: 'JetBrains Mono', monospace; font-size: 26px; font-weight: 700; letter-spacing: .06em; }
+    .group.is-main { background: rgba(224,87,60,.18); border-color: rgba(232,184,96,.35); }
+    .group.is-main strong { color: #fff; }
+
+    .result-caption { margin: 20px 0 0; color: var(--muted); font-size: 14px; }
+    .result-caption b { color: var(--text); font-weight: 600; }
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .tag { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; color: var(--gold-soft); background: rgba(232,184,96,.08); border: 1px solid rgba(232,184,96,.2); border-radius: 999px; font-size: 12px; }
+    .result-actions { display: flex; gap: 10px; margin-top: auto; padding-top: 20px; }
+    .ghost-button { display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; color: var(--text); background: transparent; border: 1px solid rgba(255,255,255,.14); border-radius: 10px; font: inherit; font-size: 14px; cursor: pointer; transition: border-color .2s, background .2s; }
+    .ghost-button:hover:not(:disabled) { border-color: var(--gold); background: rgba(232,184,96,.08); }
+    .ghost-button:disabled { opacity: .4; cursor: not-allowed; }
+    .ghost-button svg { width: 16px; height: 16px; }
+
+    .history { grid-column: 1 / -1; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .history h3 { display: flex; align-items: center; gap: 8px; margin: 0; font-family: 'Kanit', sans-serif; font-size: 17px; font-weight: 600; }
+    .history h3 svg { width: 18px; height: 18px; color: var(--gold); }
+    .history p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
     .history-list { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
-    .history-item { padding: 7px 10px; color: var(--brick-dark); background: #f3e2d5; border-radius: 7px; font-family: 'DM Mono', monospace; font-size: 13px; }
-    footer { margin-top: 28px; color: var(--muted); text-align: center; font-size: 12px; }
-    @media (max-width: 780px) { main { grid-template-columns: 1fr; padding-top: 32px; } h1 { max-width: 650px; } .result-card { min-height: 390px; } }
-    @media (max-width: 500px) { .page { width: min(100% - 24px, 1120px); padding-top: 18px; } header { padding-bottom: 18px; } .micro { display: none; } main { gap: 14px; } .form-card, .result-card { padding: 20px; border-radius: 15px; } .fields { grid-template-columns: 1fr; gap: 13px; } .full { grid-column: auto; } h1 { font-size: 54px; } .lede { font-size: 16px; } .number { width: calc(25% - 9px); height: 72px; font-size: 31px; } .numbers { gap: 10px; margin: 40px 0 27px; } .history { align-items: flex-start; flex-direction: column; padding: 18px 20px; } .history-list { justify-content: flex-start; } }
+    .history-item { padding: 6px 12px; color: var(--gold-soft); background: rgba(232,184,96,.08); border: 1px solid rgba(232,184,96,.18); border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: 14px; letter-spacing: .08em; }
+    .history-item:first-child { color: var(--night); background: var(--gold); border-color: var(--gold); }
+    .empty { color: var(--muted); font-size: 13px; }
+
+    .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); padding: 10px 18px; color: var(--night); background: var(--gold-soft); border-radius: 999px; font-size: 14px; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; }
+    .toast.is-visible { opacity: 1; transform: translate(-50%, 0); }
+
+    footer { margin-top: 28px; color: var(--muted); text-align: center; font-size: 13px; }
+
+    @media (max-width: 860px) {
+      main { grid-template-columns: 1fr; padding-top: 28px; }
+      .intro { align-items: flex-start; flex-direction: column; }
+    }
+    @media (max-width: 520px) {
+      .page { width: calc(100% - 24px); padding-top: 16px; }
+      header .pill { display: none; }
+      .form-card, .result-card { padding: 20px; }
+      .fields { grid-template-columns: 1fr 1fr; }
+      .fields > label:first-child { grid-column: 1 / -1; }
+      .half { grid-column: 1 / -1; }
+      .reels { gap: 6px; }
+      .reel, .reel-cell { height: 68px; }
+      .reel-cell { font-size: 32px; }
+      .group { padding: 10px; }
+      .group strong { font-size: 21px; }
+      .history { flex-direction: column; align-items: flex-start; }
+      .history-list { justify-content: flex-start; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .spin-button:disabled svg { animation: none; }
+    }
   </style>
 </head>
 <body>
   <div class="page">
     <header>
-      <div class="brand"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 12h7M12 8.5v7"/></svg></span><span>THAI LOTTERY SPIN</span></div>
-      <p class="micro mono">for fun · not fortune telling</p>
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"><i data-lucide="sparkles"></i></span>
+        <span>ดวงเลขนำโชค</span>
+      </div>
+      <span class="pill"><i data-lucide="moon-star"></i>เล่นสนุก ไม่ใช่คำทำนายจริง</span>
     </header>
 
     <main>
       <section class="intro" aria-labelledby="page-title">
-        <p class="eyebrow">thai lottery · astrology fun</p>
-        <h1 id="page-title">เลขของคุณ<br /><em>วันนี้</em></h1>
-        <p class="lede">กรอกครั้งเดียว แล้วหมุนเลขหวยไทยเล่นๆ</p>
-        <div class="note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 10v6M12 7.5h.01"/></svg><span>ข้อมูลเก็บในเครื่องนี้เท่านั้น · ไม่ใช่การทำนายผลจริง</span></div>
+        <div>
+          <p class="eyebrow"><i data-lucide="star"></i>เลขมงคลประจำวัน</p>
+          <h1 id="page-title">ดวงวันนี้ให้เลข<br /><em>อะไรกับคุณ?</em></h1>
+        </div>
+        <p class="lede">ใส่วันเกิดครั้งเดียว ระบบจะดูวันประจำตัว ปีนักษัตร และฤกษ์ของวันนี้ แล้วหมุนเลขนำโชคให้คุณ</p>
       </section>
 
       <section class="card form-card" aria-labelledby="form-title">
-        <div class="card-title"><h2 id="form-title">ข้อมูลของคุณ</h2><span class="section-label mono" id="save-status">บันทึกในเครื่อง</span></div>
-        <form id="lottery-form">
+        <div class="card-head">
+          <h2 id="form-title"><i data-lucide="user-round"></i>ข้อมูลดวงของคุณ</h2>
+          <span class="save-status" id="save-status"><i data-lucide="hard-drive"></i><span>เก็บไว้ในเครื่องนี้</span></span>
+        </div>
+        <form id="lottery-form" novalidate>
           <div class="fields">
-            <label>วันเกิด<input id="birth-day" type="number" min="1" max="31" placeholder="เช่น 14" required /></label>
-            <label>เดือนเกิด<select id="birth-month" required><option value="">เลือกเดือน</option><option value="1">มกราคม</option><option value="2">กุมภาพันธ์</option><option value="3">มีนาคม</option><option value="4">เมษายน</option><option value="5">พฤษภาคม</option><option value="6">มิถุนายน</option><option value="7">กรกฎาคม</option><option value="8">สิงหาคม</option><option value="9">กันยายน</option><option value="10">ตุลาคม</option><option value="11">พฤศจิกายน</option><option value="12">ธันวาคม</option></select></label>
-            <label>ปีเกิด (พ.ศ.)<input id="birth-year" type="number" min="2400" max="2700" placeholder="เช่น 2540" required /></label>
-            <label>อายุ (คำนวณอัตโนมัติ)<input id="age" type="number" min="0" max="120" placeholder="กรอกวันเกิดก่อน" readonly required /></label>
-            <label class="full">เพศ<select id="gender" required><option value="">เลือกเพศ</option><option value="หญิง">หญิง</option><option value="ชาย">ชาย</option><option value="ไม่ระบุ">ไม่ระบุ</option></select></label>
-            <label class="full">นักนักษัตรที่เกิด<select id="zodiac" required><option value="">เลือกนักษัตร</option><option>ชวด (หนู)</option><option>ฉลู (วัว)</option><option>ขาล (เสือ)</option><option>เถาะ (กระต่าย)</option><option>มะโรง (มังกร)</option><option>มะเส็ง (งู)</option><option>มะเมีย (ม้า)</option><option>มะแม (แพะ)</option><option>วอก (ลิง)</option><option>ระกา (ไก่)</option><option>จอ (สุนัข)</option><option>กุน (หมู)</option></select></label>
+            <label>วันที่เกิด<input id="birth-day" type="number" inputmode="numeric" min="1" max="31" placeholder="เช่น 14" required /></label>
+            <label>เดือนเกิด
+              <select id="birth-month" required>
+                <option value="">เลือก</option>
+                <option value="1">มกราคม</option><option value="2">กุมภาพันธ์</option><option value="3">มีนาคม</option>
+                <option value="4">เมษายน</option><option value="5">พฤษภาคม</option><option value="6">มิถุนายน</option>
+                <option value="7">กรกฎาคม</option><option value="8">สิงหาคม</option><option value="9">กันยายน</option>
+                <option value="10">ตุลาคม</option><option value="11">พฤศจิกายน</option><option value="12">ธันวาคม</option>
+              </select>
+            </label>
+            <label>ปีเกิด (พ.ศ.)<input id="birth-year" type="number" inputmode="numeric" min="2400" max="2700" placeholder="เช่น 2540" required /></label>
+            <label class="half">เพศ
+              <select id="gender" required>
+                <option value="">เลือก</option>
+                <option value="หญิง">หญิง</option>
+                <option value="ชาย">ชาย</option>
+                <option value="ไม่ระบุ">ไม่ขอระบุ</option>
+              </select>
+            </label>
+            <label class="half">อายุ<input id="age" type="text" placeholder="คำนวณให้อัตโนมัติ" readonly tabindex="-1" /></label>
+            <label class="full">ปีนักษัตร <span class="hint">เลือกให้อัตโนมัติจากปีเกิด · ถ้าเกิดก่อนสงกรานต์ ปรับเองได้</span>
+              <select id="zodiac" required>
+                <option value="">เลือกปีนักษัตร</option>
+                <option>ชวด (หนู)</option><option>ฉลู (วัว)</option><option>ขาล (เสือ)</option>
+                <option>เถาะ (กระต่าย)</option><option>มะโรง (งูใหญ่)</option><option>มะเส็ง (งูเล็ก)</option>
+                <option>มะเมีย (ม้า)</option><option>มะแม (แพะ)</option><option>วอก (ลิง)</option>
+                <option>ระกา (ไก่)</option><option>จอ (สุนัข)</option><option>กุน (หมู)</option>
+              </select>
+            </label>
           </div>
-          <button class="spin-button" id="spin-button" type="submit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 12a8 8 0 1 1-2.35-5.65"/><path d="M20 4v6h-6"/></svg><span>หมุนเลขให้หน่อย</span></button>
+          <div class="birth-insight" id="birth-insight" aria-live="polite"></div>
+          <button class="spin-button" id="spin-button" type="submit"><i data-lucide="refresh-cw"></i><span>หมุนเลขนำโชค</span></button>
         </form>
       </section>
 
       <section class="card result-card" aria-live="polite" aria-labelledby="result-title">
-        <div class="result-top"><span id="result-title" class="mono">YOUR LUCKY SET</span><strong id="result-date">ยังไม่ได้หมุน</strong></div>
-        <div class="numbers" id="numbers"><span class="number">?</span><span class="number">?</span><span class="number">?</span><span class="number">?</span><span class="number">?</span><span class="number">?</span></div>
-        <div class="number-groups">
-          <div class="result-group main"><span>เลข 2 ตัวท้าย</span><strong id="two-digit">--</strong></div>
-          <div class="result-group"><span>เลข 3 ตัวหน้า</span><strong id="three-front">---</strong></div>
-          <div class="result-group"><span>เลข 3 ตัวท้าย</span><strong id="three-back">---</strong></div>
+        <div class="card-head">
+          <h2 id="result-title"><i data-lucide="gem"></i>เลขนำโชคของคุณ</h2>
+          <span class="result-date" id="result-date">รอหมุน</span>
         </div>
-        <p class="result-caption" id="result-caption">กรอกข้อมูล แล้วกดหมุนเลข</p>
-        <div class="meta-row" id="meta-row"><span class="tag">ยังไม่มีข้อมูล</span></div>
+        <div class="reels" id="reels" aria-label="เลขนำโชค 6 หลัก"></div>
+        <div class="groups">
+          <div class="group is-main"><span>2 ตัวล่าง</span><strong id="two-digit">--</strong></div>
+          <div class="group"><span>3 ตัวหน้า</span><strong id="three-front">---</strong></div>
+          <div class="group"><span>3 ตัวท้าย</span><strong id="three-back">---</strong></div>
+        </div>
+        <p class="result-caption" id="result-caption">กรอกข้อมูลทางซ้าย แล้วกด <b>หมุนเลขนำโชค</b> ได้เลย</p>
+        <div class="tags" id="tags"></div>
+        <div class="result-actions">
+          <button class="ghost-button" id="copy-button" type="button" disabled><i data-lucide="copy"></i>คัดลอกเลข</button>
+        </div>
       </section>
 
-      <section class="card history"><div><h3>ประวัติเลข</h3><p>เลขล่าสุดในรอบนี้</p></div><div class="history-list" id="history-list"><span class="micro">ยังไม่มีประวัติ</span></div></section>
+      <section class="card history" aria-labelledby="history-title">
+        <div>
+          <h3 id="history-title"><i data-lucide="history"></i>เลขที่เคยหมุน</h3>
+          <p>เก็บไว้ 6 ชุดล่าสุด</p>
+        </div>
+        <div class="history-list" id="history-list"></div>
+      </section>
     </main>
-    <footer>เลขขำๆ เท่านั้น — ขอให้สนุกกับการลุ้นอย่างมีสติ</footer>
-  </div>
-  <script>
-    const form = document.querySelector('#lottery-form');
-    const button = document.querySelector('#spin-button');
-    const numbersEl = document.querySelector('#numbers');
-    const twoDigitEl = document.querySelector('#two-digit');
-    const threeFrontEl = document.querySelector('#three-front');
-    const threeBackEl = document.querySelector('#three-back');
-    const caption = document.querySelector('#result-caption');
-    const dateEl = document.querySelector('#result-date');
-    const meta = document.querySelector('#meta-row');
-    const historyEl = document.querySelector('#history-list');
-    const history = [];
-    const saveStatus = document.querySelector('#save-status');
-    const DB_NAME = 'thai-lottery-spin';
-    const STORE_NAME = 'profile';
-    function openProfileDB() {
-      return new Promise((resolve, reject) => {
-        const request = indexedDB.open(DB_NAME, 1);
-        request.onupgradeneeded = () => request.result.createObjectStore(STORE_NAME);
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
-      });
-    }
-    async function saveProfile() {
-      try {
-        const db = await openProfileDB();
-        const values = { day: dayInput.value, month: monthInput.value, year: yearInput.value, gender: document.querySelector('#gender').value, zodiac: document.querySelector('#zodiac').value };
-        db.transaction(STORE_NAME, 'readwrite').objectStore(STORE_NAME).put(values, 'default');
-        saveStatus.textContent = 'บันทึกแล้ว';
-      } catch { saveStatus.textContent = 'บันทึกในเครื่อง'; }
-    }
-    async function loadProfile() {
-      try {
-        const db = await openProfileDB();
-        const request = db.transaction(STORE_NAME, 'readonly').objectStore(STORE_NAME).get('default');
-        request.onsuccess = () => {
-          const values = request.result;
-          if (!values) return;
-          dayInput.value = values.day || '';
-          monthInput.value = values.month || '';
-          yearInput.value = values.year || '';
-          document.querySelector('#gender').value = values.gender || '';
-          document.querySelector('#zodiac').value = values.zodiac || '';
-          updateAge();
-          saveStatus.textContent = 'ข้อมูลเดิม';
-        };
-      } catch { saveStatus.textContent = 'บันทึกในเครื่อง'; }
-    }
 
-    const dayInput = document.querySelector('#birth-day');
-    const monthInput = document.querySelector('#birth-month');
-    const yearInput = document.querySelector('#birth-year');
-    const ageInput = document.querySelector('#age');
-    function updateAge() {
-      const day = Number(dayInput.value);
-      const month = Number(monthInput.value);
-      const buddhistYear = Number(yearInput.value);
-      if (!day || !month || !buddhistYear || buddhistYear < 2400) {
-        ageInput.value = '';
-        ageInput.placeholder = 'กรอกวันเกิดก่อน';
-        return;
+    <footer>เลขชุดนี้สุ่มเพื่อความบันเทิงเท่านั้น · เสี่ยงโชคอย่างพอดี ใช้เงินอย่างมีสติ</footer>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const DIGIT_COUNT = 6;
+      const HISTORY_LIMIT = 6;
+      const REEL_FILLER_COUNT = 18;
+      const BUDDHIST_ERA_OFFSET = 543;
+      const DB_NAME = 'thai-lottery-spin';
+      const STORE_NAME = 'profile';
+      const HISTORY_KEY = 'thai-lottery-spin:history';
+      const ZODIAC_BASE_YEAR = 2020;
+      const GENDER_CODES = { 'หญิง': 2, 'ชาย': 1, 'ไม่ระบุ': 3 };
+      const WEEKDAYS = [
+        { name: 'อาทิตย์', color: '#e0573c', colorName: 'แดง' },
+        { name: 'จันทร์', color: '#f2d04b', colorName: 'เหลือง' },
+        { name: 'อังคาร', color: '#f08bb5', colorName: 'ชมพู' },
+        { name: 'พุธ', color: '#5cc489', colorName: 'เขียว' },
+        { name: 'พฤหัสบดี', color: '#f29a3d', colorName: 'ส้ม' },
+        { name: 'ศุกร์', color: '#6bb7f0', colorName: 'ฟ้า' },
+        { name: 'เสาร์', color: '#a27ee8', colorName: 'ม่วง' },
+      ];
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      const $ = (selector) => document.querySelector(selector);
+      const elements = {
+        form: $('#lottery-form'),
+        day: $('#birth-day'),
+        month: $('#birth-month'),
+        year: $('#birth-year'),
+        age: $('#age'),
+        gender: $('#gender'),
+        zodiac: $('#zodiac'),
+        insight: $('#birth-insight'),
+        spinButton: $('#spin-button'),
+        spinLabel: $('#spin-button span'),
+        saveStatus: $('#save-status'),
+        reels: $('#reels'),
+        twoDigit: $('#two-digit'),
+        threeFront: $('#three-front'),
+        threeBack: $('#three-back'),
+        caption: $('#result-caption'),
+        tags: $('#tags'),
+        resultDate: $('#result-date'),
+        copyButton: $('#copy-button'),
+        historyList: $('#history-list'),
+        toast: $('#toast'),
+      };
+
+      let spinRound = 0;
+      let latestNumber = '';
+      let history = loadHistory();
+
+      /* ---------- Birth info ---------- */
+
+      function readBirthDate() {
+        const day = Number(elements.day.value);
+        const month = Number(elements.month.value);
+        const buddhistYear = Number(elements.year.value);
+        if (!day || !month || buddhistYear < 2400) return null;
+
+        const date = new Date(buddhistYear - BUDDHIST_ERA_OFFSET, month - 1, day);
+        const isRealDate = date.getDate() === day && date.getMonth() === month - 1;
+        return isRealDate && date <= new Date() ? date : null;
       }
-      const today = new Date();
-      const birth = new Date(buddhistYear - 543, month - 1, day);
-      let age = today.getFullYear() - birth.getFullYear();
-      const birthdayThisYear = new Date(today.getFullYear(), birth.getMonth(), birth.getDate());
-      if (today < birthdayThisYear) age--;
-      ageInput.value = Math.max(0, age);
-      ageInput.placeholder = 'คำนวณแล้ว';
-    }
-    [dayInput, monthInput, yearInput].forEach(input => input.addEventListener('input', () => { updateAge(); saveProfile(); }));
-    [document.querySelector('#gender'), document.querySelector('#zodiac')].forEach(input => input.addEventListener('change', saveProfile));
-    loadProfile();
-    const hashSeed = (text) => { let h = 2166136261; for (let i = 0; i < text.length; i++) { h ^= text.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
-    const randomFrom = (seed) => { seed = (seed * 1664525 + 1013904223) >>> 0; return [seed, seed / 4294967296]; };
-    const formatDate = () => new Intl.DateTimeFormat('th-TH', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date());
-    function makeNumbers(values) {
-      // สูตรโหราศาสตร์ไทยฉบับเล่นสนุก: วันเกิด + วันในสัปดาห์ + อายุ + ปีนักษัตร + เพศ
-      const birthDate = new Date(Number(values.year) - 543, Number(values.month) - 1, Number(values.day));
-      const weekday = birthDate.getDay();
-      const genderCode = { 'หญิง': 2, 'ชาย': 1, 'ไม่ระบุ': 3 }[values.gender] || 0;
-      const zodiacCode = Array.from(document.querySelector('#zodiac').options).findIndex(option => option.value === values.zodiac);
-      const digits = `${values.day}${values.month}${values.year}${values.age}${weekday}${genderCode}${Math.max(zodiacCode, 0)}`;
-      let seed = hashSeed(digits);
-      const out = [];
-      while (out.length < 6) { let next; [seed, next] = randomFrom(seed); out.push(Math.floor(next * 10)); }
-      return { out, seed, weekday };
-    }
-    function renderHistory() { historyEl.innerHTML = history.length ? history.map(n => `<span class="history-item">${n}</span>`).join('') : '<span class="micro">ยังไม่มีประวัติ</span>'; }
-    form.addEventListener('submit', (event) => {
-      event.preventDefault();
-      const values = { day: document.querySelector('#birth-day').value, month: document.querySelector('#birth-month').value, year: document.querySelector('#birth-year').value, age: document.querySelector('#age').value, gender: document.querySelector('#gender').value, zodiac: document.querySelector('#zodiac').value };
-      const result = makeNumbers(values);
-      const digitNodes = [...numbersEl.querySelectorAll('.number')];
-      button.disabled = true;
-      button.querySelector('span').textContent = 'กำลังหมุน...';
-      digitNodes.forEach(node => node.classList.add('is-spinning'));
-      let ticks = 0;
-      const interval = setInterval(() => { digitNodes.forEach(node => node.textContent = Math.floor(Math.random() * 10)); ticks++; if (ticks > 10) { clearInterval(interval); digitNodes.forEach((node, i) => { node.classList.remove('is-spinning'); node.textContent = result.out[i]; }); twoDigitEl.textContent = result.out.slice(-2).join(''); threeFrontEl.textContent = result.out.slice(0, 3).join(''); threeBackEl.textContent = result.out.slice(-3).join(''); button.disabled = false; button.querySelector('span').textContent = 'หมุนใหม่อีกครั้ง'; const set = result.out.join(''); history.unshift(set); if (history.length > 5) history.pop(); dateEl.textContent = formatDate(); caption.innerHTML = `คำนวณแบบโหราศาสตร์ไทยฉบับขำๆ จากวันเกิด <b>${values.day}/${values.month}/${values.year}</b> อายุ ${values.age} ปี เพศ ${values.gender} และนักษัตร ${values.zodiac}`; meta.innerHTML = `<span class="tag">หวยไทย 6 หลัก</span><span class="tag">โหราศาสตร์ไทย</span><span class="tag">อายุ ${values.age} ปี</span><span class="tag">${values.zodiac}</span>`; renderHistory(); } }, 90);
+
+      function calculateAge(birthDate, today = new Date()) {
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const hadBirthdayThisYear = today >= new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate());
+        return hadBirthdayThisYear ? age : age - 1;
+      }
+
+      function zodiacIndexForYear(christianYear) {
+        return ((christianYear - ZODIAC_BASE_YEAR) % 12 + 12) % 12;
+      }
+
+      function syncBirthInfo({ autoPickZodiac }) {
+        const birthDate = readBirthDate();
+        if (!birthDate) {
+          elements.age.value = '';
+          elements.insight.classList.remove('is-visible');
+          return;
+        }
+
+        elements.age.value = `${calculateAge(birthDate)} ปี`;
+        if (autoPickZodiac) {
+          elements.zodiac.selectedIndex = zodiacIndexForYear(birthDate.getFullYear()) + 1;
+        }
+        renderBirthInsight(WEEKDAYS[birthDate.getDay()]);
+      }
+
+      function renderBirthInsight(weekday) {
+        elements.insight.innerHTML = `<span class="day-dot" style="color:${weekday.color};background:${weekday.color}"></span>
+          <span>คุณเกิด<b>วัน${weekday.name}</b> · สีประจำวันคือ<b>สี${weekday.colorName}</b></span>`;
+        elements.insight.classList.add('is-visible');
+      }
+
+      /* ---------- Persistence ---------- */
+
+      function openProfileDB() {
+        return new Promise((resolve, reject) => {
+          const request = indexedDB.open(DB_NAME, 1);
+          request.onupgradeneeded = () => request.result.createObjectStore(STORE_NAME);
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+      }
+
+      function readProfile() {
+        return {
+          day: elements.day.value,
+          month: elements.month.value,
+          year: elements.year.value,
+          gender: elements.gender.value,
+          zodiac: elements.zodiac.value,
+        };
+      }
+
+      function setSaveStatus(text, isSaved = false) {
+        elements.saveStatus.querySelector('span').textContent = text;
+        elements.saveStatus.classList.toggle('is-saved', isSaved);
+      }
+
+      async function saveProfile() {
+        try {
+          const db = await openProfileDB();
+          db.transaction(STORE_NAME, 'readwrite').objectStore(STORE_NAME).put(readProfile(), 'default');
+          setSaveStatus('บันทึกอัตโนมัติแล้ว', true);
+        } catch {
+          setSaveStatus('บันทึกไม่ได้ในเบราว์เซอร์นี้');
+        }
+      }
+
+      async function loadProfile() {
+        try {
+          const db = await openProfileDB();
+          const request = db.transaction(STORE_NAME, 'readonly').objectStore(STORE_NAME).get('default');
+          request.onsuccess = () => {
+            const profile = request.result;
+            if (!profile) return;
+            elements.day.value = profile.day || '';
+            elements.month.value = profile.month || '';
+            elements.year.value = profile.year || '';
+            elements.gender.value = profile.gender || '';
+            elements.zodiac.value = profile.zodiac || '';
+            syncBirthInfo({ autoPickZodiac: !profile.zodiac });
+            setSaveStatus('โหลดข้อมูลเดิมแล้ว', true);
+          };
+        } catch {
+          setSaveStatus('บันทึกไม่ได้ในเบราว์เซอร์นี้');
+        }
+      }
+
+      function loadHistory() {
+        try {
+          const stored = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+          return Array.isArray(stored) ? stored.slice(0, HISTORY_LIMIT) : [];
+        } catch {
+          return [];
+        }
+      }
+
+      function pushHistory(number) {
+        history = [number, ...history].slice(0, HISTORY_LIMIT);
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+      }
+
+      /* ---------- Lucky number formula (for fun) ---------- */
+
+      function hashSeed(text) {
+        let hash = 2166136261;
+        for (let i = 0; i < text.length; i++) {
+          hash ^= text.charCodeAt(i);
+          hash = Math.imul(hash, 16777619);
+        }
+        return hash >>> 0;
+      }
+
+      function nextRandom(seed) {
+        const nextSeed = (seed * 1664525 + 1013904223) >>> 0;
+        return [nextSeed, nextSeed / 4294967296];
+      }
+
+      function todayKey() {
+        const now = new Date();
+        return `${now.getFullYear()}${now.getMonth() + 1}${now.getDate()}`;
+      }
+
+      function generateLuckyDigits(profile, birthDate, round) {
+        const seedSource = [
+          profile.day, profile.month, profile.year,
+          calculateAge(birthDate), birthDate.getDay(),
+          GENDER_CODES[profile.gender] || 0,
+          elements.zodiac.selectedIndex,
+          todayKey(), round,
+        ].join('|');
+
+        let seed = hashSeed(seedSource);
+        const digits = [];
+        while (digits.length < DIGIT_COUNT) {
+          let random;
+          [seed, random] = nextRandom(seed);
+          digits.push(Math.floor(random * 10));
+        }
+        return digits;
+      }
+
+      /* ---------- Rendering ---------- */
+
+      function buildReels() {
+        elements.reels.innerHTML = Array.from({ length: DIGIT_COUNT }, () =>
+          '<div class="reel"><div class="reel-strip"><div class="reel-cell">?</div></div></div>'
+        ).join('');
+      }
+
+      function randomDigit() {
+        return Math.floor(Math.random() * 10);
+      }
+
+      function spinReels(digits) {
+        const strips = [...elements.reels.querySelectorAll('.reel-strip')];
+
+        if (prefersReducedMotion || !window.gsap) {
+          strips.forEach((strip, i) => { strip.innerHTML = `<div class="reel-cell">${digits[i]}</div>`; });
+          return Promise.resolve();
+        }
+
+        const animations = strips.map((strip, i) => {
+          const fillers = Array.from({ length: REEL_FILLER_COUNT }, randomDigit);
+          const cells = [strip.textContent.trim() || '?', ...fillers, digits[i]];
+          strip.innerHTML = cells.map(value => `<div class="reel-cell">${value}</div>`).join('');
+
+          const finalOffset = -((cells.length - 1) / cells.length) * 100;
+          return gsap.fromTo(strip,
+            { yPercent: 0 },
+            { yPercent: finalOffset, duration: 1.4 + i * 0.22, ease: 'power3.out' }
+          ).then(() => {
+            strip.innerHTML = `<div class="reel-cell">${digits[i]}</div>`;
+            gsap.set(strip, { yPercent: 0 });
+            gsap.fromTo(strip.parentElement, { scale: 1.08 }, { scale: 1, duration: 0.35, ease: 'back.out(3)' });
+          });
+        });
+
+        return Promise.all(animations);
+      }
+
+      function celebrate() {
+        if (prefersReducedMotion || !window.confetti) return;
+        const colors = ['#e8b860', '#f6dca4', '#e0573c', '#ffffff'];
+        confetti({ particleCount: 90, spread: 75, origin: { y: 0.55 }, colors });
+        setTimeout(() => confetti({ particleCount: 50, angle: 60, spread: 60, origin: { x: 0 }, colors }), 180);
+        setTimeout(() => confetti({ particleCount: 50, angle: 120, spread: 60, origin: { x: 1 }, colors }), 180);
+      }
+
+      function renderGroups(digits) {
+        elements.twoDigit.textContent = digits.slice(-2).join('');
+        elements.threeFront.textContent = digits.slice(0, 3).join('');
+        elements.threeBack.textContent = digits.slice(-3).join('');
+      }
+
+      function renderSummary(profile, birthDate) {
+        const weekday = WEEKDAYS[birthDate.getDay()];
+        const zodiacName = profile.zodiac.split(' ')[0];
+        elements.resultDate.textContent = new Intl.DateTimeFormat('th-TH', { dateStyle: 'medium' }).format(new Date());
+        elements.caption.innerHTML = `ผูกดวงจากคนเกิด<b>วัน${weekday.name}</b> ปี<b>${zodiacName}</b> อายุ <b>${calculateAge(birthDate)} ปี</b> กับฤกษ์ของวันนี้ · รอบที่ ${spinRound}`;
+        elements.tags.innerHTML = [
+          `<span class="tag">สีมงคล: ${weekday.colorName}</span>`,
+          `<span class="tag">ปี${zodiacName}</span>`,
+          `<span class="tag">เลขเด่น: ${elements.twoDigit.textContent}</span>`,
+        ].join('');
+      }
+
+      function renderHistory() {
+        elements.historyList.innerHTML = history.length
+          ? history.map(number => `<span class="history-item">${number}</span>`).join('')
+          : '<span class="empty">ยังไม่เคยหมุน ลองกดดูสักรอบ</span>';
+      }
+
+      function setSpinning(isSpinning) {
+        elements.spinButton.disabled = isSpinning;
+        elements.copyButton.disabled = isSpinning || !latestNumber;
+        elements.spinLabel.textContent = isSpinning ? 'กำลังเสี่ยงทาย...' : 'หมุนอีกรอบ';
+      }
+
+      function showToast(message) {
+        elements.toast.textContent = message;
+        elements.toast.classList.add('is-visible');
+        clearTimeout(showToast.timer);
+        showToast.timer = setTimeout(() => elements.toast.classList.remove('is-visible'), 2000);
+      }
+
+      /* ---------- Event handlers ---------- */
+
+      async function handleSpin(event) {
+        event.preventDefault();
+        const birthDate = readBirthDate();
+        if (!elements.form.checkValidity() || !birthDate) {
+          elements.form.reportValidity();
+          if (!birthDate) showToast('วันเกิดไม่ถูกต้อง ลองเช็กอีกครั้ง');
+          return;
+        }
+
+        const profile = readProfile();
+        spinRound += 1;
+        const digits = generateLuckyDigits(profile, birthDate, spinRound);
+
+        setSpinning(true);
+        await spinReels(digits);
+
+        latestNumber = digits.join('');
+        renderGroups(digits);
+        renderSummary(profile, birthDate);
+        pushHistory(latestNumber);
+        renderHistory();
+        setSpinning(false);
+        celebrate();
+      }
+
+      async function handleCopy() {
+        const text = `เลขนำโชค ${latestNumber} · 2 ตัวล่าง ${elements.twoDigit.textContent} · 3 ตัวหน้า ${elements.threeFront.textContent} · 3 ตัวท้าย ${elements.threeBack.textContent}`;
+        try {
+          await navigator.clipboard.writeText(text);
+          showToast('คัดลอกเลขแล้ว');
+        } catch {
+          showToast('คัดลอกไม่สำเร็จ');
+        }
+      }
+
+      [elements.day, elements.month, elements.year].forEach(input =>
+        input.addEventListener('input', () => {
+          syncBirthInfo({ autoPickZodiac: input === elements.year });
+          saveProfile();
+        })
+      );
+      [elements.gender, elements.zodiac].forEach(input => input.addEventListener('change', saveProfile));
+      elements.form.addEventListener('submit', handleSpin);
+      elements.copyButton.addEventListener('click', handleCopy);
+
+      buildReels();
+      renderHistory();
+      loadProfile();
+      window.lucide?.createIcons();
     });
   </script>
 </body>
