@@ -5,198 +5,186 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ดวงเลขนำโชค — วงล้อเลขมงคลประจำวัน</title>
   <meta name="description" content="หมุนเลขนำโชคประจำวันจากวันเกิด ปีนักษัตร และวันประจำตัว สนุกๆ ไม่ใช่คำทำนายจริง" />
+  <meta name="theme-color" content="#EB001B" />
+  <link rel="icon" type="image/svg+xml" href="logo.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;800&family=Noto+Sans+Thai:wght@400;600;800&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js" defer></script>
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
   <style>
     :root {
-      --night: #0e0c1b;
-      --night-2: #17142b;
-      --panel: rgba(28, 24, 52, .72);
-      --panel-border: rgba(232, 184, 96, .18);
-      --gold: #e8b860;
-      --gold-soft: #f6dca4;
-      --vermilion: #e0573c;
-      --text: #f4efe6;
-      --muted: #a69fb8;
-      --field: rgba(255, 255, 255, .05);
-      --field-border: rgba(255, 255, 255, .12);
-      --radius: 20px;
-      --shadow: 0 24px 60px rgba(0, 0, 0, .45);
+      --red: #EB001B;
+      --orange: #FF5F00;
+      --amber: #F79E1B;
+      --ink: #141414;
+      --muted: #6e6e6e;
+      --line: #dddddd;
+      --surface: #f4f4f2;
+      --white: #ffffff;
     }
     * { box-sizing: border-box; }
-    html { background: var(--night); }
     body {
       margin: 0;
       min-width: 320px;
-      min-height: 100vh;
-      color: var(--text);
-      font-family: 'IBM Plex Sans Thai', system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--white);
+      font-family: 'Noto Sans Thai', system-ui, sans-serif;
       font-size: 16px;
       line-height: 1.6;
-      background: var(--night);
     }
-    .page { position: relative; width: min(1140px, calc(100% - 36px)); margin: 0 auto; padding: 28px 0 40px; }
+    .num { font-family: 'Inter', sans-serif; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .page { width: min(1140px, calc(100% - 40px)); margin: 0 auto; padding: 22px 0 40px; }
 
-    header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,.08); }
-    .brand { display: flex; align-items: center; gap: 12px; font-family: 'Kanit', sans-serif; font-weight: 600; font-size: 18px; }
-    .brand-mark { width: 40px; height: 40px; display: grid; place-items: center; color: var(--night); background: var(--gold); border-radius: 12px; }
-    .brand-mark svg { width: 22px; height: 22px; }
-    .pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; color: var(--muted); border: 1px solid rgba(255,255,255,.1); border-radius: 999px; font-size: 13px; }
-    .pill svg { width: 14px; height: 14px; color: var(--gold); }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 16px; font-size: 13px; font-weight: 600; line-height: 1.35; }
+    header .right { text-align: right; }
+    .brand { display: flex; align-items: center; gap: 12px; color: inherit; text-decoration: none; }
+    .logo { width: 48px; height: 48px; flex: 0 0 auto; }
+    .logo-ring { transform-origin: 32px 32px; }
+    body.is-spinning .logo-ring { animation: rotate .9s linear infinite; }
+    .wordmark { font-size: 20px; font-weight: 800; line-height: 1; letter-spacing: -.01em; }
+    .wordmark small { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: .14em; }
 
-    main { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; padding-top: 40px; }
-    .intro { grid-column: 1 / -1; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-bottom: 6px; }
-    .eyebrow { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 12px; color: var(--gold); font-size: 14px; font-weight: 600; }
-    .eyebrow svg { width: 16px; height: 16px; }
-    h1 { margin: 0; font-family: 'Kanit', sans-serif; font-size: clamp(38px, 6vw, 64px); line-height: 1.1; font-weight: 700; }
-    h1 em { font-style: normal; color: var(--gold); }
-    .lede { max-width: 440px; margin: 0; color: var(--muted); font-size: 17px; }
+    .intro { padding: 64px 0 44px; display: flex; align-items: flex-end; justify-content: space-between; gap: 28px; flex-wrap: wrap; }
+    h1 { margin: 0; font-size: clamp(40px, 7vw, 80px); line-height: 1.05; font-weight: 800; letter-spacing: -.01em; }
+    h1 em { font-style: normal; color: var(--red); }
+    .lede { max-width: 420px; margin: 0; color: var(--muted); font-size: 17px; }
 
-    .card { position: relative; background: var(--panel); border: 1px solid var(--panel-border); border-radius: var(--radius); box-shadow: var(--shadow); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
-    .card-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 20px; }
-    h2 { display: flex; align-items: center; gap: 10px; margin: 0; font-family: 'Kanit', sans-serif; font-size: 21px; font-weight: 600; }
-    h2 svg { width: 20px; height: 20px; color: var(--gold); }
-    .save-status { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; transition: color .3s; }
-    .save-status svg { width: 14px; height: 14px; }
-    .save-status.is-saved { color: #8fd4a4; }
+    main { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .card { background: var(--surface); border-radius: 28px; padding: 28px; }
+    .card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 22px; }
+    h2 { margin: 0; font-size: 22px; font-weight: 800; }
+    .meta { color: var(--muted); font-size: 13px; }
+    .meta.is-saved { color: var(--ink); }
 
-    .form-card { padding: 26px; }
     .fields { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
     .full { grid-column: 1 / -1; }
     .half { grid-column: span 3; }
-    label { display: grid; gap: 7px; color: var(--muted); font-size: 13px; font-weight: 500; }
-    .hint { color: rgba(166,159,184,.7); font-size: 12px; font-weight: 400; }
+    label { display: grid; gap: 6px; font-size: 14px; font-weight: 600; }
+    .hint { color: var(--muted); font-size: 12px; font-weight: 400; }
     input, select {
-      width: 100%; min-height: 48px; padding: 0 14px;
-      color: var(--text); background: var(--field);
-      border: 1px solid var(--field-border); border-radius: 12px;
-      font: inherit; font-size: 15px; outline: none;
-      transition: border-color .2s, box-shadow .2s, background .2s;
+      width: 100%; min-height: 50px; padding: 0 14px;
+      color: var(--ink); background: var(--white);
+      border: 1px solid var(--line); border-radius: 12px;
+      font: inherit; font-size: 15px; font-weight: 400; outline: none;
+      transition: border-color .15s;
     }
-    select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23a69fb8' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
-    select option { color: #111; }
-    input:focus, select:focus { border-color: var(--gold); background-color: rgba(232,184,96,.06); box-shadow: 0 0 0 3px rgba(232,184,96,.15); }
-    input[readonly] { color: var(--gold-soft); background-color: rgba(232,184,96,.06); border-style: dashed; }
-    input:user-invalid, select:user-invalid { border-color: var(--vermilion); }
+    select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23141414' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+    input:focus, select:focus { border-color: var(--ink); }
+    input[readonly] { background: transparent; border-style: dashed; font-weight: 600; }
+    input:user-invalid, select:user-invalid { border-color: var(--red); }
 
-    .birth-insight { display: none; align-items: center; gap: 10px; margin-top: 16px; padding: 12px 14px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); border-radius: 12px; font-size: 14px; color: var(--muted); }
+    .birth-insight { display: none; align-items: center; gap: 10px; margin-top: 18px; font-size: 14px; color: var(--muted); }
     .birth-insight.is-visible { display: flex; }
-    .birth-insight b { color: var(--text); }
-    .day-dot { flex: 0 0 auto; width: 14px; height: 14px; border-radius: 50%; box-shadow: 0 0 12px currentColor; }
+    .birth-insight b { color: var(--ink); }
+    .day-dot { flex: 0 0 auto; width: 12px; height: 12px; border-radius: 50%; }
 
     .spin-button {
-      position: relative; overflow: hidden;
-      width: 100%; min-height: 58px; margin-top: 20px;
+      width: 100%; min-height: 60px; margin-top: 22px;
       display: flex; align-items: center; justify-content: center; gap: 10px;
       border: 0; border-radius: 14px;
-      color: var(--night); background: var(--gold);
-      font-family: 'Kanit', sans-serif; font-size: 18px; font-weight: 600;
-      cursor: pointer;
-      transition: transform .18s, background .18s, filter .18s;
+      color: var(--white); background: var(--red);
+      font: inherit; font-size: 18px; font-weight: 800;
+      cursor: pointer; transition: background .15s;
     }
-    .spin-button:hover { transform: translateY(-2px); background: var(--gold-soft); }
+    .spin-button:hover { background: var(--orange); }
     .spin-button:active { transform: translateY(1px); }
-    .spin-button:disabled { cursor: wait; filter: saturate(.6) brightness(.9); transform: none; }
+    .spin-button:disabled { cursor: wait; background: var(--orange); }
     .spin-button svg { width: 20px; height: 20px; }
-    .spin-button:disabled svg { animation: rotate 0.8s linear infinite; }
+    .spin-button:disabled svg { animation: rotate .8s linear infinite; }
     @keyframes rotate { to { transform: rotate(360deg); } }
 
-    .result-card { padding: 26px; overflow: hidden; display: flex; flex-direction: column; }
-    .result-card::before { content: ''; position: absolute; width: 380px; height: 380px; right: -160px; top: -160px; border-radius: 50%; border: 1px dashed rgba(232,184,96,.18); box-shadow: 0 0 0 40px rgba(232,184,96,.03), 0 0 0 80px rgba(232,184,96,.02); pointer-events: none; }
-    .result-date { color: var(--gold-soft); font-size: 13px; }
-
-    .reels { position: relative; display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin: 10px 0 22px; }
-    .reel {
-      position: relative; height: 92px; overflow: hidden;
-      background: #f6ecd6;
-      border-radius: 14px;
-      box-shadow: inset 0 -6px 0 rgba(0,0,0,.08), 0 6px 0 rgba(224,87,60,.85), 0 12px 24px rgba(0,0,0,.35);
-    }
+    .result-card { display: flex; flex-direction: column; }
+    .reels { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 8px; }
+    .reel { height: 96px; overflow: hidden; background: var(--ink); border-radius: 14px; }
     .reel-strip { will-change: transform; }
-    .reel-cell { height: 92px; display: grid; place-items: center; color: var(--night); font-family: 'JetBrains Mono', monospace; font-size: 44px; font-weight: 700; }
+    .reel-cell { height: 96px; display: grid; place-items: center; color: var(--white); font-size: 46px; }
 
-    .groups { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .group { padding: 12px 14px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); border-radius: 14px; }
-    .group span { display: block; color: var(--muted); font-size: 12px; }
-    .group strong { display: block; margin-top: 2px; color: var(--gold-soft); font-family: 'JetBrains Mono', monospace; font-size: 26px; font-weight: 700; letter-spacing: .06em; }
-    .group.is-main { background: rgba(224,87,60,.18); border-color: rgba(232,184,96,.35); }
-    .group.is-main strong { color: #fff; }
+    .groups { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .group { min-height: 128px; padding: 18px 12px; display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--white); border-radius: 22px 22px 6px 6px; text-align: center; }
+    .group span { font-size: 13px; font-weight: 600; }
+    .group strong { font-size: 34px; letter-spacing: .04em; }
+    .group.red { background: var(--red); }
+    .group.orange { background: var(--orange); }
+    .group.amber { background: var(--amber); color: var(--ink); }
 
     .result-caption { margin: 20px 0 0; color: var(--muted); font-size: 14px; }
-    .result-caption b { color: var(--text); font-weight: 600; }
-    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
-    .tag { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; color: var(--gold-soft); background: rgba(232,184,96,.08); border: 1px solid rgba(232,184,96,.2); border-radius: 999px; font-size: 12px; }
-    .result-actions { display: flex; gap: 10px; margin-top: auto; padding-top: 20px; }
-    .ghost-button { display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; color: var(--text); background: transparent; border: 1px solid rgba(255,255,255,.14); border-radius: 10px; font: inherit; font-size: 14px; cursor: pointer; transition: border-color .2s, background .2s; }
-    .ghost-button:hover:not(:disabled) { border-color: var(--gold); background: rgba(232,184,96,.08); }
-    .ghost-button:disabled { opacity: .4; cursor: not-allowed; }
-    .ghost-button svg { width: 16px; height: 16px; }
+    .result-caption b { color: var(--ink); font-weight: 600; }
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+    .tag { padding: 4px 10px; background: var(--white); border-radius: 8px; font-size: 13px; }
+    .result-actions { margin-top: auto; padding-top: 20px; }
+    .outline-button { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; color: var(--ink); background: transparent; border: 1.5px solid var(--ink); border-radius: 12px; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; transition: background .15s, color .15s; }
+    .outline-button:hover:not(:disabled) { color: var(--white); background: var(--ink); }
+    .outline-button:disabled { opacity: .35; cursor: not-allowed; }
+    .outline-button svg { width: 16px; height: 16px; }
 
-    .history { grid-column: 1 / -1; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-    .history h3 { display: flex; align-items: center; gap: 8px; margin: 0; font-family: 'Kanit', sans-serif; font-size: 17px; font-weight: 600; }
-    .history h3 svg { width: 18px; height: 18px; color: var(--gold); }
-    .history p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
-    .history-list { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
-    .history-item { padding: 6px 12px; color: var(--gold-soft); background: rgba(232,184,96,.08); border: 1px solid rgba(232,184,96,.18); border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: 14px; letter-spacing: .08em; }
-    .history-item:first-child { color: var(--night); background: var(--gold); border-color: var(--gold); }
+    .history { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 22px 28px; }
+    .history h3 { margin: 0; font-size: 17px; font-weight: 800; }
+    .history p { margin: 0; color: var(--muted); font-size: 13px; }
+    .history-list { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+    .history-item { padding: 6px 12px; background: var(--white); border-radius: 8px; font-size: 15px; letter-spacing: .06em; }
+    .history-item:first-child { color: var(--white); background: var(--red); }
     .empty { color: var(--muted); font-size: 13px; }
 
-    .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); padding: 10px 18px; color: var(--night); background: var(--gold-soft); border-radius: 999px; font-size: 14px; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; }
+    .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 16px); padding: 10px 18px; color: var(--white); background: var(--ink); border-radius: 12px; font-size: 14px; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; }
     .toast.is-visible { opacity: 1; transform: translate(-50%, 0); }
 
     footer { margin-top: 28px; color: var(--muted); text-align: center; font-size: 13px; }
 
     @media (max-width: 860px) {
-      main { grid-template-columns: 1fr; padding-top: 28px; }
-      .intro { align-items: flex-start; flex-direction: column; }
+      main { grid-template-columns: 1fr; }
+      .intro { padding: 44px 0 32px; flex-direction: column; align-items: flex-start; }
     }
     @media (max-width: 520px) {
       .page { width: calc(100% - 24px); padding-top: 16px; }
-      header .pill { display: none; }
-      .form-card, .result-card { padding: 20px; }
+      header { grid-template-columns: 1fr auto; }
+      header .right { display: none; }
+      .card { padding: 20px; border-radius: 22px; }
       .fields { grid-template-columns: 1fr 1fr; }
       .fields > label:first-child { grid-column: 1 / -1; }
       .half { grid-column: 1 / -1; }
-      .reels { gap: 6px; }
+      .reels { gap: 5px; }
       .reel, .reel-cell { height: 68px; }
       .reel-cell { font-size: 32px; }
-      .group { padding: 10px; }
-      .group strong { font-size: 21px; }
-      .history { flex-direction: column; align-items: flex-start; }
+      .group { min-height: 104px; padding: 14px 6px; }
+      .group span { font-size: 12px; }
+      .group strong { font-size: 24px; }
+      .history { flex-direction: column; align-items: flex-start; padding: 20px; }
       .history-list { justify-content: flex-start; }
     }
     @media (prefers-reduced-motion: reduce) {
-      .spin-button:disabled svg { animation: none; }
+      .spin-button:disabled svg, body.is-spinning .logo-ring { animation: none; }
     }
   </style>
 </head>
 <body>
   <div class="page">
     <header>
-      <div class="brand">
-        <span class="brand-mark" aria-hidden="true"><i data-lucide="sparkles"></i></span>
-        <span>ดวงเลขนำโชค</span>
-      </div>
-      <span class="pill"><i data-lucide="moon-star"></i>เล่นสนุก ไม่ใช่คำทำนายจริง</span>
+      <a class="brand" href="./" aria-label="ดวงเลขนำโชค หน้าแรก">
+        <svg class="logo" viewBox="0 0 64 64" aria-hidden="true">
+          <g class="logo-ring" fill="none" stroke-width="8" stroke-dasharray="52.6 123.3">
+            <circle cx="32" cy="32" r="28" stroke="#EB001B" transform="rotate(-87 32 32)" />
+            <circle cx="32" cy="32" r="28" stroke="#FF5F00" transform="rotate(33 32 32)" />
+            <circle cx="32" cy="32" r="28" stroke="#F79E1B" transform="rotate(153 32 32)" />
+          </g>
+          <circle cx="32" cy="32" r="19" fill="#141414" />
+          <text x="32" y="29.5" fill="#fff" font-family="'Noto Sans Thai', sans-serif" font-size="30" font-weight="800" text-anchor="middle" dominant-baseline="central">๙</text>
+        </svg>
+        <span class="wordmark">ดวงเลขนำโชค<small>LUCKY SPIN</small></span>
+      </a>
+      <span class="right">เล่นสนุก<br />ไม่ใช่คำทำนายจริง</span>
     </header>
 
-    <main>
-      <section class="intro" aria-labelledby="page-title">
-        <div>
-          <p class="eyebrow"><i data-lucide="star"></i>เลขมงคลประจำวัน</p>
-          <h1 id="page-title">ดวงวันนี้ให้เลข<br /><em>อะไรกับคุณ?</em></h1>
-        </div>
-        <p class="lede">ใส่วันเกิดครั้งเดียว ระบบจะดูวันประจำตัว ปีนักษัตร และฤกษ์ของวันนี้ แล้วหมุนเลขนำโชคให้คุณ</p>
-      </section>
+    <section class="intro" aria-labelledby="page-title">
+      <h1 id="page-title">ใครจะเป็น<br /><em>เศรษฐี?</em></h1>
+      <p class="lede">ไม่ต้องตอบ 15 ข้อ ไม่ต้องโทรหาเพื่อน แค่ใส่วันเกิดแล้วกดหมุน… เลขชุดนี้คือ “คำตอบสุดท้าย” ไหมครับ?</p>
+    </section>
 
-      <section class="card form-card" aria-labelledby="form-title">
+    <main>
+      <section class="card" aria-labelledby="form-title">
         <div class="card-head">
-          <h2 id="form-title"><i data-lucide="user-round"></i>ข้อมูลดวงของคุณ</h2>
-          <span class="save-status" id="save-status"><i data-lucide="hard-drive"></i><span>เก็บไว้ในเครื่องนี้</span></span>
+          <h2 id="form-title">ข้อมูลดวงของคุณ</h2>
+          <span class="meta" id="save-status">เก็บไว้ในเครื่องนี้</span>
         </div>
         <form id="lottery-form" novalidate>
           <div class="fields">
@@ -231,31 +219,37 @@
             </label>
           </div>
           <div class="birth-insight" id="birth-insight" aria-live="polite"></div>
-          <button class="spin-button" id="spin-button" type="submit"><i data-lucide="refresh-cw"></i><span>หมุนเลขนำโชค</span></button>
+          <button class="spin-button" id="spin-button" type="submit">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+            <span>หมุนเลขนำโชค</span>
+          </button>
         </form>
       </section>
 
       <section class="card result-card" aria-live="polite" aria-labelledby="result-title">
         <div class="card-head">
-          <h2 id="result-title"><i data-lucide="gem"></i>เลขนำโชคของคุณ</h2>
-          <span class="result-date" id="result-date">รอหมุน</span>
+          <h2 id="result-title">เลขนำโชคของคุณ</h2>
+          <span class="meta" id="result-date">รอหมุน</span>
         </div>
         <div class="reels" id="reels" aria-label="เลขนำโชค 6 หลัก"></div>
         <div class="groups">
-          <div class="group is-main"><span>2 ตัวล่าง</span><strong id="two-digit">--</strong></div>
-          <div class="group"><span>3 ตัวหน้า</span><strong id="three-front">---</strong></div>
-          <div class="group"><span>3 ตัวท้าย</span><strong id="three-back">---</strong></div>
+          <div class="group red"><span>2 ตัวล่าง</span><strong class="num" id="two-digit">--</strong></div>
+          <div class="group orange"><span>3 ตัวหน้า</span><strong class="num" id="three-front">---</strong></div>
+          <div class="group amber"><span>3 ตัวท้าย</span><strong class="num" id="three-back">---</strong></div>
         </div>
-        <p class="result-caption" id="result-caption">กรอกข้อมูลทางซ้าย แล้วกด <b>หมุนเลขนำโชค</b> ได้เลย</p>
+        <p class="result-caption" id="result-caption">กรอกข้อมูล แล้วกด <b>หมุนเลขนำโชค</b> ได้เลย</p>
         <div class="tags" id="tags"></div>
         <div class="result-actions">
-          <button class="ghost-button" id="copy-button" type="button" disabled><i data-lucide="copy"></i>คัดลอกเลข</button>
+          <button class="outline-button" id="copy-button" type="button" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+            คัดลอกเลข
+          </button>
         </div>
       </section>
 
       <section class="card history" aria-labelledby="history-title">
         <div>
-          <h3 id="history-title"><i data-lucide="history"></i>เลขที่เคยหมุน</h3>
+          <h3 id="history-title">เลขที่เคยหมุน</h3>
           <p>เก็บไว้ 6 ชุดล่าสุด</p>
         </div>
         <div class="history-list" id="history-list"></div>
@@ -277,6 +271,7 @@
       const STORE_NAME = 'profile';
       const HISTORY_KEY = 'thai-lottery-spin:history';
       const ZODIAC_BASE_YEAR = 2020;
+      const CONFETTI_COLORS = ['#EB001B', '#FF5F00', '#F79E1B'];
       const GENDER_CODES = { 'หญิง': 2, 'ชาย': 1, 'ไม่ระบุ': 3 };
       const WEEKDAYS = [
         { name: 'อาทิตย์', color: '#e0573c', colorName: 'แดง' },
@@ -357,7 +352,7 @@
       }
 
       function renderBirthInsight(weekday) {
-        elements.insight.innerHTML = `<span class="day-dot" style="color:${weekday.color};background:${weekday.color}"></span>
+        elements.insight.innerHTML = `<span class="day-dot" style="background:${weekday.color}"></span>
           <span>คุณเกิด<b>วัน${weekday.name}</b> · สีประจำวันคือ<b>สี${weekday.colorName}</b></span>`;
         elements.insight.classList.add('is-visible');
       }
@@ -384,7 +379,7 @@
       }
 
       function setSaveStatus(text, isSaved = false) {
-        elements.saveStatus.querySelector('span').textContent = text;
+        elements.saveStatus.textContent = text;
         elements.saveStatus.classList.toggle('is-saved', isSaved);
       }
 
@@ -474,9 +469,13 @@
 
       /* ---------- Rendering ---------- */
 
+      function reelCell(value) {
+        return `<div class="reel-cell num">${value}</div>`;
+      }
+
       function buildReels() {
         elements.reels.innerHTML = Array.from({ length: DIGIT_COUNT }, () =>
-          '<div class="reel"><div class="reel-strip"><div class="reel-cell">?</div></div></div>'
+          `<div class="reel"><div class="reel-strip">${reelCell('?')}</div></div>`
         ).join('');
       }
 
@@ -488,23 +487,22 @@
         const strips = [...elements.reels.querySelectorAll('.reel-strip')];
 
         if (prefersReducedMotion || !window.gsap) {
-          strips.forEach((strip, i) => { strip.innerHTML = `<div class="reel-cell">${digits[i]}</div>`; });
+          strips.forEach((strip, i) => { strip.innerHTML = reelCell(digits[i]); });
           return Promise.resolve();
         }
 
         const animations = strips.map((strip, i) => {
           const fillers = Array.from({ length: REEL_FILLER_COUNT }, randomDigit);
           const cells = [strip.textContent.trim() || '?', ...fillers, digits[i]];
-          strip.innerHTML = cells.map(value => `<div class="reel-cell">${value}</div>`).join('');
+          strip.innerHTML = cells.map(reelCell).join('');
 
           const finalOffset = -((cells.length - 1) / cells.length) * 100;
           return gsap.fromTo(strip,
             { yPercent: 0 },
             { yPercent: finalOffset, duration: 1.4 + i * 0.22, ease: 'power3.out' }
           ).then(() => {
-            strip.innerHTML = `<div class="reel-cell">${digits[i]}</div>`;
+            strip.innerHTML = reelCell(digits[i]);
             gsap.set(strip, { yPercent: 0 });
-            gsap.fromTo(strip.parentElement, { scale: 1.08 }, { scale: 1, duration: 0.35, ease: 'back.out(3)' });
           });
         });
 
@@ -513,7 +511,7 @@
 
       function celebrate() {
         if (prefersReducedMotion || !window.confetti) return;
-        const colors = ['#e8b860', '#f6dca4', '#e0573c', '#ffffff'];
+        const colors = CONFETTI_COLORS;
         confetti({ particleCount: 90, spread: 75, origin: { y: 0.55 }, colors });
         setTimeout(() => confetti({ particleCount: 50, angle: 60, spread: 60, origin: { x: 0 }, colors }), 180);
         setTimeout(() => confetti({ particleCount: 50, angle: 120, spread: 60, origin: { x: 1 }, colors }), 180);
@@ -539,11 +537,12 @@
 
       function renderHistory() {
         elements.historyList.innerHTML = history.length
-          ? history.map(number => `<span class="history-item">${number}</span>`).join('')
+          ? history.map(number => `<span class="history-item num">${number}</span>`).join('')
           : '<span class="empty">ยังไม่เคยหมุน ลองกดดูสักรอบ</span>';
       }
 
       function setSpinning(isSpinning) {
+        document.body.classList.toggle('is-spinning', isSpinning);
         elements.spinButton.disabled = isSpinning;
         elements.copyButton.disabled = isSpinning || !latestNumber;
         elements.spinLabel.textContent = isSpinning ? 'กำลังเสี่ยงทาย...' : 'หมุนอีกรอบ';
@@ -606,7 +605,6 @@
       buildReels();
       renderHistory();
       loadProfile();
-      window.lucide?.createIcons();
     });
   </script>
 </body>
