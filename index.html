@@ -3,9 +3,40 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <title>ดวงเลขนำโชค — วงล้อเลขมงคลประจำวัน</title>
-  <meta name="description" content="หมุนเลขนำโชคประจำวันจากวันเกิด ปีนักษัตร และวันประจำตัว สนุกๆ ไม่ใช่คำทำนายจริง" />
+  <title>ใครจะเป็นเศรษฐี? หมุนเลขนำโชคจากวันเกิด | ดวงเลขนำโชค</title>
+  <meta name="description" content="หมุนเลขนำโชคประจำวันฟรี จากวันเกิด วันประจำตัว และปีนักษัตร ได้ทั้งเลข 2 ตัวล่าง 3 ตัวหน้า 3 ตัวท้าย แล้วแชร์ให้เพื่อนทาง Facebook และ LINE ได้ทันที" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://nack-thanaphon.github.io/thai-lottery-astrology-spin/" />
   <meta name="theme-color" content="#EB001B" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="th_TH" />
+  <meta property="og:site_name" content="ดวงเลขนำโชค" />
+  <meta property="og:url" content="https://nack-thanaphon.github.io/thai-lottery-astrology-spin/" />
+  <meta property="og:title" content="ใครจะเป็นเศรษฐี? หมุนเลขนำโชคจากวันเกิด" />
+  <meta property="og:description" content="ใส่วันเกิด เลือกปีนักษัตร แล้วกดหมุน รับเลข 2 ตัวล่าง 3 ตัวหน้า 3 ตัวท้ายประจำวันของคุณ" />
+  <meta property="og:image" content="https://nack-thanaphon.github.io/thai-lottery-astrology-spin/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="ใครจะเป็นเศรษฐี? ดวงเลขนำโชค" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="ใครจะเป็นเศรษฐี? หมุนเลขนำโชคจากวันเกิด" />
+  <meta name="twitter:description" content="ใส่วันเกิด เลือกปีนักษัตร แล้วกดหมุน รับเลขนำโชคประจำวันของคุณ" />
+  <meta name="twitter:image" content="https://nack-thanaphon.github.io/thai-lottery-astrology-spin/og-image.png" />
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "ดวงเลขนำโชค — ใครจะเป็นเศรษฐี?",
+      "url": "https://nack-thanaphon.github.io/thai-lottery-astrology-spin/",
+      "description": "หมุนเลขนำโชคประจำวันจากวันเกิด วันประจำตัว และปีนักษัตร",
+      "inLanguage": "th",
+      "applicationCategory": "EntertainmentApplication",
+      "operatingSystem": "Any",
+      "image": "https://nack-thanaphon.github.io/thai-lottery-astrology-spin/og-image.png",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "THB" }
+    }
+  </script>
   <link rel="icon" type="image/svg+xml" href="logo.svg" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
@@ -44,7 +75,6 @@
     .page { width: min(1140px, calc(100% - 40px)); margin: 0 auto; padding: max(22px, env(safe-area-inset-top)) 0 max(40px, env(safe-area-inset-bottom)); }
 
     header { display: flex; align-items: center; justify-content: space-between; gap: 16px; font-size: 13px; font-weight: 600; line-height: 1.35; }
-    header .right { text-align: right; }
     .brand { display: flex; align-items: center; gap: 12px; color: inherit; text-decoration: none; }
     .logo { width: 48px; height: 48px; flex: 0 0 auto; }
     .logo-ring { transform-origin: 32px 32px; }
@@ -148,7 +178,12 @@
     .result-caption b { color: var(--ink); font-weight: 600; }
     .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
     .tag { padding: 4px 10px; background: var(--white); border-radius: 8px; font-size: 13px; }
-    .result-actions { margin-top: auto; padding-top: 20px; }
+    .result-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; padding-top: 20px; }
+    .share-button { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; color: var(--white); border: 0; border-radius: 12px; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; transition: filter .15s; }
+    .share-button:hover { filter: brightness(.92); }
+    .share-button svg { width: 18px; height: 18px; }
+    .share-button.facebook { background: #1877F2; }
+    .share-button.line { background: #06C755; }
     .outline-button { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; color: var(--ink); background: transparent; border: 1.5px solid var(--ink); border-radius: 12px; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; transition: background .15s, color .15s; }
     .outline-button:hover:not(:disabled) { color: var(--white); background: var(--ink); }
     .outline-button:disabled { opacity: .35; cursor: not-allowed; }
@@ -172,9 +207,7 @@
       .intro { padding: 44px 0 32px; flex-direction: column; align-items: flex-start; }
     }
     @media (max-width: 520px) {
-      .page { width: calc(100% - 24px); padding-top: 16px; }
-      header { grid-template-columns: 1fr auto; }
-      header .right { display: none; }
+      .page { width: calc(100% - 24px); padding-top: max(16px, env(safe-area-inset-top)); }
       .card { padding: 20px; border-radius: 22px; }
       .fields { grid-template-columns: 1fr 1fr; }
       .fields > label:first-child { grid-column: 1 / -1; }
@@ -208,7 +241,6 @@
         </svg>
         <span class="wordmark">ดวงเลขนำโชค<small>LUCKY SPIN</small></span>
       </a>
-      <span class="right">เล่นสนุก<br />ไม่ใช่คำทำนายจริง</span>
     </header>
 
     <section class="intro" aria-labelledby="page-title">
@@ -270,6 +302,14 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
             คัดลอกเลข
           </button>
+          <button class="share-button facebook" id="share-facebook" type="button" aria-label="แชร์ไป Facebook">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978c.401 0 .955.042 1.468.103a9 9 0 0 1 1.141.195v3.325a9 9 0 0 0-.653-.036a27 27 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.7 1.7 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103l-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647"/></svg>
+            Facebook
+          </button>
+          <button class="share-button line" id="share-line" type="button" aria-label="แชร์ไป LINE">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.365 9.863a.631.631 0 0 1 0 1.261H17.61v1.125h1.755a.63.63 0 1 1 0 1.259h-2.386a.63.63 0 0 1-.627-.629V8.108c0-.345.282-.63.63-.63h2.386a.63.63 0 0 1-.003 1.26H17.61v1.125zm-3.855 3.016a.63.63 0 0 1-.631.627a.62.62 0 0 1-.51-.25l-2.443-3.317v2.94a.63.63 0 0 1-1.257 0V8.108a.627.627 0 0 1 .624-.628c.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63c.345 0 .63.285.63.63zm-5.741 0a.63.63 0 0 1-.631.629a.63.63 0 0 1-.627-.629V8.108c0-.345.282-.63.63-.63c.346 0 .628.285.628.63zm-2.466.629H4.917a.634.634 0 0 1-.63-.629V8.108c0-.345.285-.63.63-.63c.348 0 .63.285.63.63v4.141h1.756a.63.63 0 0 1 0 1.259M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608c.391.082.923.258 1.058.59c.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645c1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+            LINE
+          </button>
         </div>
       </section>
 
@@ -298,6 +338,8 @@
       const HISTORY_KEY = 'thai-lottery-spin:history';
       const ZODIAC_BASE_YEAR = 2020;
       const CONFETTI_COLORS = ['#EB001B', '#FF5F00', '#F79E1B'];
+      const SITE_URL = 'https://nack-thanaphon.github.io/thai-lottery-astrology-spin/';
+      const SHARE_WINDOW_FEATURES = 'noopener,noreferrer,width=600,height=640';
       const GENDER_CODES = { 'หญิง': 2, 'ชาย': 1, 'ไม่ระบุ': 3 };
       const ICON_BASE_URL = 'https://api.iconify.design/fluent-emoji-flat/';
       const GENDERS = [
@@ -351,6 +393,8 @@
         tags: $('#tags'),
         resultDate: $('#result-date'),
         copyButton: $('#copy-button'),
+        shareFacebook: $('#share-facebook'),
+        shareLine: $('#share-line'),
         historyList: $('#history-list'),
         toast: $('#toast'),
       };
@@ -672,6 +716,24 @@
         }
       }
 
+      function buildShareText() {
+        return latestNumber
+          ? `ใครจะเป็นเศรษฐี? เลขนำโชคของฉันวันนี้ 2 ตัวล่าง ${elements.twoDigit.textContent} · 3 ตัวหน้า ${elements.threeFront.textContent} · 3 ตัวท้าย ${elements.threeBack.textContent} ลองหมุนของคุณบ้าง`
+          : 'ใครจะเป็นเศรษฐี? มาหมุนเลขนำโชคจากวันเกิดกัน';
+      }
+
+      function openShareWindow(url) {
+        window.open(url, '_blank', SHARE_WINDOW_FEATURES);
+      }
+
+      function handleShareFacebook() {
+        openShareWindow(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(SITE_URL)}`);
+      }
+
+      function handleShareLine() {
+        openShareWindow(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(SITE_URL)}&text=${encodeURIComponent(buildShareText())}`);
+      }
+
       [elements.day, elements.month, elements.year].forEach(input =>
         input.addEventListener('input', () => {
           syncBirthInfo({ autoPickZodiac: input === elements.year });
@@ -681,6 +743,8 @@
       [elements.genderChoices, elements.zodiacChoices].forEach(group => group.addEventListener('change', saveProfile));
       elements.form.addEventListener('submit', handleSpin);
       elements.copyButton.addEventListener('click', handleCopy);
+      elements.shareFacebook.addEventListener('click', handleShareFacebook);
+      elements.shareLine.addEventListener('click', handleShareLine);
 
       /* ---------- Mobile app behavior ---------- */
 
