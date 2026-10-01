@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>หวยไทยขำๆ — Lucky Spin</title>
+  <meta name="description" content="วงล้อสุ่มเลขเล่นๆ จากข้อมูลวันเกิด" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap');
+    :root {
+      --paper: #f5efe4;
+      --paper-deep: #ebe1d1;
+      --ink: #1c1a17;
+      --muted: #746d63;
+      --line: #d7cbbb;
+      --brick: #b44c35;
+      --brick-dark: #843722;
+      --green: #63745d;
+      --white: #fffdf8;
+      --shadow: 0 18px 45px rgba(73, 48, 29, .13);
+    }
+    * { box-sizing: border-box; }
+    html { background: var(--paper); }
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(180, 76, 53, .08), transparent 29rem),
+        var(--paper);
+      font-family: 'Noto Sans Thai', system-ui, sans-serif;
+      font-size: 16px;
+    }
+    .page { width: min(1120px, calc(100% - 36px)); margin: 0 auto; padding: 28px 0 48px; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-bottom: 28px; border-bottom: 1px solid var(--line); }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: -.03em; }
+    .brand-mark { width: 38px; height: 38px; display: grid; place-items: center; background: var(--brick); color: var(--white); border-radius: 50%; box-shadow: 4px 4px 0 var(--brick-dark); }
+    .brand-mark svg { width: 20px; height: 20px; }
+    .micro { margin: 0; color: var(--muted); font-size: 13px; }
+    .mono { font-family: 'DM Mono', monospace; }
+    main { display: grid; grid-template-columns: .9fr 1.1fr; gap: 24px; padding-top: 46px; }
+    .intro { padding: 12px 0; }
+    .eyebrow { display: inline-block; margin: 0 0 18px; color: var(--brick-dark); font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: .11em; text-transform: uppercase; }
+    h1 { max-width: 520px; margin: 0; font-size: clamp(42px, 7vw, 82px); line-height: .97; letter-spacing: -.08em; font-weight: 800; }
+    h1 em { color: var(--brick); font-style: normal; }
+    .lede { max-width: 450px; margin: 24px 0 0; color: var(--muted); font-size: 18px; line-height: 1.8; }
+    .note { display: flex; align-items: flex-start; gap: 10px; max-width: 430px; margin-top: 34px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; line-height: 1.7; }
+    .note svg { flex: 0 0 auto; width: 17px; margin-top: 3px; color: var(--brick); }
+    .card { background: rgba(255,253,248,.7); border: 1px solid var(--line); border-radius: 20px; box-shadow: var(--shadow); }
+    .form-card { padding: 26px; }
+    .card-title { display: flex; justify-content: space-between; align-items: baseline; gap: 15px; margin-bottom: 22px; }
+    h2 { margin: 0; font-size: 22px; letter-spacing: -.04em; }
+    .section-label { color: var(--muted); font-size: 12px; }
+    .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    label { display: grid; gap: 7px; color: var(--muted); font-size: 13px; font-weight: 600; }
+    input, select { width: 100%; min-height: 48px; padding: 0 13px; color: var(--ink); background: var(--white); border: 1px solid #cdbfac; border-radius: 10px; font: inherit; outline: none; }
+    input:focus, select:focus { border-color: var(--brick); box-shadow: 0 0 0 3px rgba(180,76,53,.13); }
+    .full { grid-column: 1 / -1; }
+    .spin-button { position: relative; width: 100%; min-height: 58px; margin-top: 22px; display: flex; align-items: center; justify-content: center; gap: 12px; border: 0; border-radius: 10px; color: var(--white); background: var(--brick); font: inherit; font-weight: 800; cursor: pointer; transition: transform .18s, background .18s; }
+    .spin-button:hover { background: var(--brick-dark); transform: translateY(-2px); }
+    .spin-button:active { transform: translateY(1px); }
+    .spin-button:disabled { cursor: wait; opacity: .75; }
+    .spin-button svg { width: 20px; }
+    .result-card { position: relative; min-height: 100%; padding: 28px; overflow: hidden; background: var(--ink); color: var(--white); border: 0; }
+    .result-card::after { content: ''; position: absolute; width: 300px; height: 300px; right: -120px; bottom: -130px; border: 1px solid rgba(255,255,255,.14); border-radius: 50%; box-shadow: 0 0 0 28px rgba(255,255,255,.035), 0 0 0 56px rgba(255,255,255,.025); }
+    .result-top { position: relative; z-index: 1; display: flex; justify-content: space-between; gap: 16px; color: #bdb5aa; font-size: 13px; }
+    .result-top strong { color: #f5c3a7; font-weight: 600; }
+    .numbers { position: relative; z-index: 1; display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin: 54px 0 34px; }
+    .number { width: 76px; height: 94px; display: grid; place-items: center; color: var(--ink); background: var(--paper); border-radius: 13px; font-family: 'DM Mono', monospace; font-size: 42px; font-weight: 500; box-shadow: 5px 5px 0 rgba(180,76,53,.8); }
+    .number.is-spinning { animation: flip .22s linear infinite; }
+    @keyframes flip { 0% { transform: translateY(0) rotateX(0); } 50% { transform: translateY(-6px) rotateX(90deg); } 100% { transform: translateY(0) rotateX(180deg); } }
+    .result-caption { position: relative; z-index: 1; max-width: 430px; color: #bdb5aa; line-height: 1.7; }
+    .result-caption b { color: var(--white); }
+    .meta-row { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 27px; }
+    .tag { padding: 7px 10px; color: #d9cfc2; border: 1px solid rgba(255,255,255,.16); border-radius: 999px; font-size: 12px; }
+    .history { grid-column: 1 / -1; padding: 21px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .history h3 { margin: 0 0 4px; font-size: 16px; }
+    .history p { margin: 0; color: var(--muted); font-size: 13px; }
+    .history-list { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .history-item { padding: 7px 10px; color: var(--brick-dark); background: #f3e2d5; border-radius: 7px; font-family: 'DM Mono', monospace; font-size: 13px; }
+    footer { margin-top: 28px; color: var(--muted); text-align: center; font-size: 12px; }
+    @media (max-width: 780px) { main { grid-template-columns: 1fr; padding-top: 32px; } h1 { max-width: 650px; } .result-card { min-height: 390px; } }
+    @media (max-width: 500px) { .page { width: min(100% - 24px, 1120px); padding-top: 18px; } header { padding-bottom: 18px; } .micro { display: none; } main { gap: 14px; } .form-card, .result-card { padding: 20px; border-radius: 15px; } .fields { grid-template-columns: 1fr; gap: 13px; } .full { grid-column: auto; } h1 { font-size: 54px; } .lede { font-size: 16px; } .number { width: calc(25% - 9px); height: 72px; font-size: 31px; } .numbers { gap: 10px; margin: 40px 0 27px; } .history { align-items: flex-start; flex-direction: column; padding: 18px 20px; } .history-list { justify-content: flex-start; } }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="brand"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 12h7M12 8.5v7"/></svg></span><span>THAI LOTTERY SPIN</span></div>
+      <p class="micro mono">for fun · not fortune telling</p>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow">thai lottery · astrology fun</p>
+        <h1 id="page-title">เลขของคุณ<br /><em>วันนี้</em></h1>
+        <p class="lede">ใส่ข้อมูลนิดหน่อย แล้วให้สูตรโหราศาสตร์ไทยฉบับขำๆ ช่วยจัดชุดเลขสำหรับหวยไทยงวดนี้</p>
+        <div class="note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 10v6M12 7.5h.01"/></svg><span>ระบบใช้ข้อมูลเป็น seed เพื่อให้ทุกเลขมีเรื่องเล่า แต่ไม่ได้ทำนายผลสลากจริง โปรดซื้ออย่างพอดี</span></div>
+      </section>
+
+      <section class="card form-card" aria-labelledby="form-title">
+        <div class="card-title"><h2 id="form-title">ข้อมูลเจ้าของเลข</h2><span class="section-label mono">01 / 02</span></div>
+        <form id="lottery-form">
+          <div class="fields">
+            <label>วันเกิด<input id="birth-day" type="number" min="1" max="31" placeholder="เช่น 14" required /></label>
+            <label>เดือนเกิด<select id="birth-month" required><option value="">เลือกเดือน</option><option value="1">มกราคม</option><option value="2">กุมภาพันธ์</option><option value="3">มีนาคม</option><option value="4">เมษายน</option><option value="5">พฤษภาคม</option><option value="6">มิถุนายน</option><option value="7">กรกฎาคม</option><option value="8">สิงหาคม</option><option value="9">กันยายน</option><option value="10">ตุลาคม</option><option value="11">พฤศจิกายน</option><option value="12">ธันวาคม</option></select></label>
+            <label>ปีเกิด (พ.ศ.)<input id="birth-year" type="number" min="2400" max="2700" placeholder="เช่น 2540" required /></label>
+            <label>อายุ (คำนวณอัตโนมัติ)<input id="age" type="number" min="0" max="120" placeholder="กรอกวันเกิดก่อน" readonly required /></label>
+            <label class="full">เพศ<select id="gender" required><option value="">เลือกเพศ</option><option value="หญิง">หญิง</option><option value="ชาย">ชาย</option><option value="ไม่ระบุ">ไม่ระบุ</option></select></label>
+            <label class="full">นักนักษัตรที่เกิด<select id="zodiac" required><option value="">เลือกนักษัตร</option><option>ชวด (หนู)</option><option>ฉลู (วัว)</option><option>ขาล (เสือ)</option><option>เถาะ (กระต่าย)</option><option>มะโรง (มังกร)</option><option>มะเส็ง (งู)</option><option>มะเมีย (ม้า)</option><option>มะแม (แพะ)</option><option>วอก (ลิง)</option><option>ระกา (ไก่)</option><option>จอ (สุนัข)</option><option>กุน (หมู)</option></select></label>
+          </div>
+          <button class="spin-button" id="spin-button" type="submit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 12a8 8 0 1 1-2.35-5.65"/><path d="M20 4v6h-6"/></svg><span>หมุนเลขให้หน่อย</span></button>
+        </form>
+      </section>
+
+      <section class="card result-card" aria-live="polite" aria-labelledby="result-title">
+        <div class="result-top"><span id="result-title" class="mono">YOUR LUCKY SET</span><strong id="result-date">ยังไม่ได้หมุน</strong></div>
+        <div class="numbers" id="numbers"><span class="number">?</span><span class="number">?</span><span class="number">?</span><span class="number">?</span><span class="number">?</span><span class="number">?</span></div>
+        <p class="result-caption" id="result-caption">เลข 6 หลักของคุณจะปรากฏตรงนี้<br />กรอกข้อมูลทางซ้ายแล้วกด <b>หมุนเลขให้หน่อย</b></p>
+        <div class="meta-row" id="meta-row"><span class="tag">ยังไม่มีข้อมูล</span></div>
+      </section>
+
+      <section class="card history"><div><h3>เลขที่เคยหมุน</h3><p>เก็บไว้ดูย้อนหลังในรอบนี้</p></div><div class="history-list" id="history-list"><span class="micro">ยังไม่มีประวัติ</span></div></section>
+    </main>
+    <footer>เลขขำๆ เท่านั้น — ขอให้สนุกกับการลุ้นอย่างมีสติ</footer>
+  </div>
+  <script>
+    const form = document.querySelector('#lottery-form');
+    const button = document.querySelector('#spin-button');
+    const numbersEl = document.querySelector('#numbers');
+    const caption = document.querySelector('#result-caption');
+    const dateEl = document.querySelector('#result-date');
+    const meta = document.querySelector('#meta-row');
+    const historyEl = document.querySelector('#history-list');
+    const history = [];
+    const pad = (n) => String(n).padStart(2, '0');
+    const dayInput = document.querySelector('#birth-day');
+    const monthInput = document.querySelector('#birth-month');
+    const yearInput = document.querySelector('#birth-year');
+    const ageInput = document.querySelector('#age');
+    function updateAge() {
+      const day = Number(dayInput.value);
+      const month = Number(monthInput.value);
+      const buddhistYear = Number(yearInput.value);
+      if (!day || !month || !buddhistYear || buddhistYear < 2400) {
+        ageInput.value = '';
+        ageInput.placeholder = 'กรอกวันเกิดก่อน';
+        return;
+      }
+      const today = new Date();
+      const birth = new Date(buddhistYear - 543, month - 1, day);
+      let age = today.getFullYear() - birth.getFullYear();
+      const birthdayThisYear = new Date(today.getFullYear(), birth.getMonth(), birth.getDate());
+      if (today < birthdayThisYear) age--;
+      ageInput.value = Math.max(0, age);
+      ageInput.placeholder = 'คำนวณแล้ว';
+    }
+    [dayInput, monthInput, yearInput].forEach(input => input.addEventListener('input', updateAge));
+    const hashSeed = (text) => { let h = 2166136261; for (let i = 0; i < text.length; i++) { h ^= text.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
+    const randomFrom = (seed) => { seed = (seed * 1664525 + 1013904223) >>> 0; return [seed, seed / 4294967296]; };
+    const formatDate = () => new Intl.DateTimeFormat('th-TH', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date());
+    function makeNumbers(values) {
+      // สูตรโหราศาสตร์ไทยฉบับเล่นสนุก: วันเกิด + วันในสัปดาห์ + อายุ + ปีนักษัตร + เพศ
+      const birthDate = new Date(Number(values.year) - 543, Number(values.month) - 1, Number(values.day));
+      const weekday = birthDate.getDay();
+      const genderCode = { 'หญิง': 2, 'ชาย': 1, 'ไม่ระบุ': 3 }[values.gender] || 0;
+      const zodiacCode = Array.from(document.querySelector('#zodiac').options).findIndex(option => option.value === values.zodiac);
+      const digits = `${values.day}${values.month}${values.year}${values.age}${weekday}${genderCode}${Math.max(zodiacCode, 0)}`;
+      let seed = hashSeed(digits);
+      const out = [];
+      while (out.length < 6) { let next; [seed, next] = randomFrom(seed); out.push(Math.floor(next * 10)); }
+      return { out, seed, weekday };
+    }
+    function renderHistory() { historyEl.innerHTML = history.length ? history.map(n => `<span class="history-item">${n}</span>`).join('') : '<span class="micro">ยังไม่มีประวัติ</span>'; }
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const values = { day: document.querySelector('#birth-day').value, month: document.querySelector('#birth-month').value, year: document.querySelector('#birth-year').value, age: document.querySelector('#age').value, gender: document.querySelector('#gender').value, zodiac: document.querySelector('#zodiac').value };
+      const result = makeNumbers(values);
+      const digitNodes = [...numbersEl.querySelectorAll('.number')];
+      button.disabled = true;
+      button.querySelector('span').textContent = 'กำลังหมุน...';
+      digitNodes.forEach(node => node.classList.add('is-spinning'));
+      let ticks = 0;
+      const interval = setInterval(() => { digitNodes.forEach(node => node.textContent = Math.floor(Math.random() * 10)); ticks++; if (ticks > 10) { clearInterval(interval); digitNodes.forEach((node, i) => { node.classList.remove('is-spinning'); node.textContent = result.out[i]; }); button.disabled = false; button.querySelector('span').textContent = 'หมุนใหม่อีกครั้ง'; const set = result.out.join(''); history.unshift(set); if (history.length > 5) history.pop(); dateEl.textContent = formatDate(); caption.innerHTML = `คำนวณแบบโหราศาสตร์ไทยฉบับขำๆ จากวันเกิด <b>${values.day}/${values.month}/${values.year}</b> อายุ ${values.age} ปี เพศ ${values.gender} และนักษัตร ${values.zodiac}`; meta.innerHTML = `<span class="tag">หวยไทย 6 หลัก</span><span class="tag">โหราศาสตร์ไทย</span><span class="tag">อายุ ${values.age} ปี</span><span class="tag">${values.zodiac}</span>`; renderHistory(); } }, 90);
+    });
+  </script>
+</body>
+</html>
