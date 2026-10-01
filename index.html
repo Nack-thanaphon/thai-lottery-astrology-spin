@@ -2,11 +2,17 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <title>ดวงเลขนำโชค — วงล้อเลขมงคลประจำวัน</title>
   <meta name="description" content="หมุนเลขนำโชคประจำวันจากวันเกิด ปีนักษัตร และวันประจำตัว สนุกๆ ไม่ใช่คำทำนายจริง" />
   <meta name="theme-color" content="#EB001B" />
   <link rel="icon" type="image/svg+xml" href="logo.svg" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="ดวงเลขนำโชค" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;800&family=Noto+Sans+Thai:wght@400;600;800&display=swap" rel="stylesheet" />
@@ -24,6 +30,7 @@
       --white: #ffffff;
     }
     * { box-sizing: border-box; }
+    html { touch-action: manipulation; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
     body {
       margin: 0;
       min-width: 320px;
@@ -34,7 +41,7 @@
       line-height: 1.6;
     }
     .num { font-family: 'Inter', sans-serif; font-weight: 800; font-variant-numeric: tabular-nums; }
-    .page { width: min(1140px, calc(100% - 40px)); margin: 0 auto; padding: 22px 0 40px; }
+    .page { width: min(1140px, calc(100% - 40px)); margin: 0 auto; padding: max(22px, env(safe-area-inset-top)) 0 max(40px, env(safe-area-inset-bottom)); }
 
     header { display: flex; align-items: center; justify-content: space-between; gap: 16px; font-size: 13px; font-weight: 600; line-height: 1.35; }
     header .right { text-align: right; }
@@ -46,10 +53,8 @@
     .wordmark small { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: .14em; }
 
     .intro { padding: 64px 0 44px; display: flex; align-items: flex-end; justify-content: space-between; gap: 28px; flex-wrap: wrap; }
-    h1 { margin: 0; font-size: clamp(40px, 7vw, 80px); line-height: 1.05; font-weight: 800; letter-spacing: -.01em; }
+    h1 { margin: 0; font-size: clamp(30px, 8vw, 80px); line-height: 1.05; font-weight: 800; letter-spacing: -.01em; white-space: nowrap; }
     h1 em { font-style: normal; color: var(--red); }
-    .lede { max-width: 420px; margin: 0; color: var(--muted); font-size: 17px; }
-
     main { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     .card { background: var(--surface); border-radius: 28px; padding: 28px; }
     .card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 22px; }
@@ -59,20 +64,51 @@
 
     .fields { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
     .full { grid-column: 1 / -1; }
-    .half { grid-column: span 3; }
     label { display: grid; gap: 6px; font-size: 14px; font-weight: 600; }
     .hint { color: var(--muted); font-size: 12px; font-weight: 400; }
     input, select {
       width: 100%; min-height: 50px; padding: 0 14px;
       color: var(--ink); background: var(--white);
       border: 1px solid var(--line); border-radius: 12px;
-      font: inherit; font-size: 15px; font-weight: 400; outline: none;
+      font: inherit; font-size: 16px; font-weight: 400; outline: none;
       transition: border-color .15s;
     }
     select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23141414' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
     input:focus, select:focus { border-color: var(--ink); }
     input[readonly] { background: transparent; border-style: dashed; font-weight: 600; }
     input:user-invalid, select:user-invalid { border-color: var(--red); }
+
+    fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+    legend { padding: 0; margin-bottom: 8px; font-size: 14px; font-weight: 600; }
+    .choices { display: grid; gap: 8px; }
+    .choices.gender { grid-template-columns: repeat(3, 1fr); }
+    .choices.zodiac { grid-template-columns: repeat(6, 1fr); }
+    .choice {
+      position: relative;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+      min-height: 92px; padding: 14px 4px 10px;
+      background: var(--white); border: 1.5px solid var(--line); border-radius: 14px;
+      text-align: center; cursor: pointer;
+      transition: border-color .15s, background .15s;
+    }
+    .choice:hover { border-color: #b5b5b5; }
+    .choice input { position: absolute; inset: 0; width: 100%; height: 100%; min-height: 0; margin: 0; opacity: 0; cursor: pointer; }
+    .choice img { width: 34px; height: 34px; pointer-events: none; }
+    .choice-name { font-size: 13px; font-weight: 700; line-height: 1.2; }
+    .choice-sub { color: var(--muted); font-size: 11px; line-height: 1.2; }
+    .choice::after {
+      content: ''; position: absolute; top: 7px; right: 7px;
+      width: 16px; height: 16px;
+      background: var(--white) no-repeat center / 12px;
+      border: 1.5px solid #c9c9c9; border-radius: 5px;
+    }
+    .choice:has(input:checked) { background: #fff5f5; border-color: var(--red); }
+    .choice:has(input:checked)::after {
+      background-color: var(--red); border-color: var(--red);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12 5 5 9-10'/%3E%3C/svg%3E");
+    }
+    .choice:has(input:focus-visible) { outline: 2px solid var(--ink); outline-offset: 2px; }
+    .choice:has(input:user-invalid) { border-color: var(--red); }
 
     .birth-insight { display: none; align-items: center; gap: 10px; margin-top: 18px; font-size: 14px; color: var(--muted); }
     .birth-insight.is-visible { display: flex; }
@@ -142,7 +178,7 @@
       .card { padding: 20px; border-radius: 22px; }
       .fields { grid-template-columns: 1fr 1fr; }
       .fields > label:first-child { grid-column: 1 / -1; }
-      .half { grid-column: 1 / -1; }
+      .choices.zodiac { grid-template-columns: repeat(4, 1fr); }
       .reels { gap: 5px; }
       .reel, .reel-cell { height: 68px; }
       .reel-cell { font-size: 32px; }
@@ -168,7 +204,7 @@
             <circle cx="32" cy="32" r="28" stroke="#F79E1B" transform="rotate(153 32 32)" />
           </g>
           <circle cx="32" cy="32" r="19" fill="#141414" />
-          <text x="32" y="29.5" fill="#fff" font-family="'Noto Sans Thai', sans-serif" font-size="30" font-weight="800" text-anchor="middle" dominant-baseline="central">๙</text>
+          <path fill="#fff" d="M35.82 32.09Q36.71 34.68 38.2 36.71Q39.69 38.74 41.47 40.19L38.7 43Q36.25 40.83 34.26 38.06Q32.27 35.29 31.41 32.76Q31.16 32.05 30.44 31.57Q29.71 31.09 28.64 31.09Q27.18 31.09 26.24 32.16Q25.3 33.23 25.3 35.18Q25.3 36.32 25.62 37.28Q25.98 36.53 26.9 36.03Q27.82 35.54 28.85 35.54Q30.56 35.54 31.64 36.55Q32.73 37.56 32.73 39.2Q32.73 40.87 31.47 41.92Q30.21 42.96 28.21 42.96Q25.94 42.96 24.18 41.97Q22.42 40.97 21.44 39.2Q20.47 37.42 20.47 35.15Q20.47 32.84 21.52 31.02Q22.56 29.21 24.39 28.2Q26.22 27.18 28.5 27.18Q29.71 27.18 31.09 27.59Q32.48 28 33.37 28.78Q33.51 28.14 34.03 27.66Q34.54 27.18 35.32 27.18Q36.32 27.18 37.7 28.18Q38.06 28.43 38.42 28.61Q38.77 28.78 39.02 28.78Q39.37 28.78 39.55 28.02Q39.73 27.26 39.73 26.01Q39.73 23.42 39.23 21H43.14Q43.53 23.56 43.53 25.55Q43.53 32.02 39.55 32.02Q39.02 32.02 38.63 31.86Q38.24 31.7 37.67 31.38Q37.6 31.34 37.26 31.15Q36.92 30.95 36.6 30.95Q35.93 30.95 35.82 32.09ZM27.5 39.2Q27.5 39.77 27.88 40.14Q28.25 40.51 28.82 40.51Q29.42 40.51 29.78 40.14Q30.13 39.77 30.13 39.2Q30.13 38.59 29.78 38.24Q29.42 37.88 28.82 37.88Q28.25 37.88 27.88 38.24Q27.5 38.59 27.5 39.2Z" />
         </svg>
         <span class="wordmark">ดวงเลขนำโชค<small>LUCKY SPIN</small></span>
       </a>
@@ -176,8 +212,7 @@
     </header>
 
     <section class="intro" aria-labelledby="page-title">
-      <h1 id="page-title">ใครจะเป็น<br /><em>เศรษฐี?</em></h1>
-      <p class="lede">ไม่ต้องตอบ 15 ข้อ ไม่ต้องโทรหาเพื่อน แค่ใส่วันเกิดแล้วกดหมุน… เลขชุดนี้คือ “คำตอบสุดท้าย” ไหมครับ?</p>
+      <h1 id="page-title">ใครจะเป็น<em>เศรษฐี?</em></h1>
     </section>
 
     <main>
@@ -199,24 +234,15 @@
               </select>
             </label>
             <label>ปีเกิด (พ.ศ.)<input id="birth-year" type="number" inputmode="numeric" min="2400" max="2700" placeholder="เช่น 2540" required /></label>
-            <label class="half">เพศ
-              <select id="gender" required>
-                <option value="">เลือก</option>
-                <option value="หญิง">หญิง</option>
-                <option value="ชาย">ชาย</option>
-                <option value="ไม่ระบุ">ไม่ขอระบุ</option>
-              </select>
-            </label>
-            <label class="half">อายุ<input id="age" type="text" placeholder="คำนวณให้อัตโนมัติ" readonly tabindex="-1" /></label>
-            <label class="full">ปีนักษัตร <span class="hint">เลือกให้อัตโนมัติจากปีเกิด · ถ้าเกิดก่อนสงกรานต์ ปรับเองได้</span>
-              <select id="zodiac" required>
-                <option value="">เลือกปีนักษัตร</option>
-                <option>ชวด (หนู)</option><option>ฉลู (วัว)</option><option>ขาล (เสือ)</option>
-                <option>เถาะ (กระต่าย)</option><option>มะโรง (งูใหญ่)</option><option>มะเส็ง (งูเล็ก)</option>
-                <option>มะเมีย (ม้า)</option><option>มะแม (แพะ)</option><option>วอก (ลิง)</option>
-                <option>ระกา (ไก่)</option><option>จอ (สุนัข)</option><option>กุน (หมู)</option>
-              </select>
-            </label>
+            <label class="full">อายุ<input id="age" type="text" placeholder="คำนวณให้อัตโนมัติ" readonly tabindex="-1" /></label>
+            <fieldset class="full">
+              <legend>เพศ</legend>
+              <div class="choices gender" id="gender-choices"></div>
+            </fieldset>
+            <fieldset class="full">
+              <legend>ปีนักษัตร <span class="hint">เลือกให้อัตโนมัติจากปีเกิด · ถ้าเกิดก่อนสงกรานต์ ปรับเองได้</span></legend>
+              <div class="choices zodiac" id="zodiac-choices"></div>
+            </fieldset>
           </div>
           <div class="birth-insight" id="birth-insight" aria-live="polite"></div>
           <button class="spin-button" id="spin-button" type="submit">
@@ -273,6 +299,26 @@
       const ZODIAC_BASE_YEAR = 2020;
       const CONFETTI_COLORS = ['#EB001B', '#FF5F00', '#F79E1B'];
       const GENDER_CODES = { 'หญิง': 2, 'ชาย': 1, 'ไม่ระบุ': 3 };
+      const ICON_BASE_URL = 'https://api.iconify.design/fluent-emoji-flat/';
+      const GENDERS = [
+        { value: 'หญิง', title: 'หญิง', icon: 'woman' },
+        { value: 'ชาย', title: 'ชาย', icon: 'man' },
+        { value: 'ไม่ระบุ', title: 'ไม่ขอระบุ', icon: 'person' },
+      ];
+      const ZODIACS = [
+        { name: 'ชวด', animal: 'หนู', icon: 'rat' },
+        { name: 'ฉลู', animal: 'วัว', icon: 'ox' },
+        { name: 'ขาล', animal: 'เสือ', icon: 'tiger' },
+        { name: 'เถาะ', animal: 'กระต่าย', icon: 'rabbit' },
+        { name: 'มะโรง', animal: 'งูใหญ่', icon: 'dragon' },
+        { name: 'มะเส็ง', animal: 'งูเล็ก', icon: 'snake' },
+        { name: 'มะเมีย', animal: 'ม้า', icon: 'horse' },
+        { name: 'มะแม', animal: 'แพะ', icon: 'goat' },
+        { name: 'วอก', animal: 'ลิง', icon: 'monkey' },
+        { name: 'ระกา', animal: 'ไก่', icon: 'rooster' },
+        { name: 'จอ', animal: 'สุนัข', icon: 'dog' },
+        { name: 'กุน', animal: 'หมู', icon: 'pig' },
+      ].map(zodiac => ({ ...zodiac, value: `${zodiac.name} (${zodiac.animal})` }));
       const WEEKDAYS = [
         { name: 'อาทิตย์', color: '#e0573c', colorName: 'แดง' },
         { name: 'จันทร์', color: '#f2d04b', colorName: 'เหลือง' },
@@ -291,8 +337,8 @@
         month: $('#birth-month'),
         year: $('#birth-year'),
         age: $('#age'),
-        gender: $('#gender'),
-        zodiac: $('#zodiac'),
+        genderChoices: $('#gender-choices'),
+        zodiacChoices: $('#zodiac-choices'),
         insight: $('#birth-insight'),
         spinButton: $('#spin-button'),
         spinLabel: $('#spin-button span'),
@@ -312,6 +358,40 @@
       let spinRound = 0;
       let latestNumber = '';
       let history = loadHistory();
+
+      /* ---------- Choice tiles ---------- */
+
+      function choiceTile({ group, value, title, subtitle, icon }) {
+        return `<label class="choice">
+          <input type="radio" name="${group}" value="${value}" required />
+          <img src="${ICON_BASE_URL}${icon}.svg" alt="" width="34" height="34" loading="lazy" />
+          <span class="choice-name">${title}</span>
+          ${subtitle ? `<span class="choice-sub">${subtitle}</span>` : ''}
+        </label>`;
+      }
+
+      function renderChoices() {
+        elements.genderChoices.innerHTML = GENDERS
+          .map(gender => choiceTile({ group: 'gender', ...gender }))
+          .join('');
+        elements.zodiacChoices.innerHTML = ZODIACS
+          .map(zodiac => choiceTile({ group: 'zodiac', value: zodiac.value, title: zodiac.name, subtitle: zodiac.animal, icon: zodiac.icon }))
+          .join('');
+      }
+
+      function getChoice(group) {
+        return elements.form.querySelector(`input[name="${group}"]:checked`)?.value || '';
+      }
+
+      function setChoice(group, value) {
+        elements.form.querySelectorAll(`input[name="${group}"]`).forEach(input => {
+          input.checked = input.value === value;
+        });
+      }
+
+      function zodiacIndexOf(value) {
+        return ZODIACS.findIndex(zodiac => zodiac.value === value);
+      }
 
       /* ---------- Birth info ---------- */
 
@@ -346,7 +426,7 @@
 
         elements.age.value = `${calculateAge(birthDate)} ปี`;
         if (autoPickZodiac) {
-          elements.zodiac.selectedIndex = zodiacIndexForYear(birthDate.getFullYear()) + 1;
+          setChoice('zodiac', ZODIACS[zodiacIndexForYear(birthDate.getFullYear())].value);
         }
         renderBirthInsight(WEEKDAYS[birthDate.getDay()]);
       }
@@ -373,8 +453,8 @@
           day: elements.day.value,
           month: elements.month.value,
           year: elements.year.value,
-          gender: elements.gender.value,
-          zodiac: elements.zodiac.value,
+          gender: getChoice('gender'),
+          zodiac: getChoice('zodiac'),
         };
       }
 
@@ -403,8 +483,8 @@
             elements.day.value = profile.day || '';
             elements.month.value = profile.month || '';
             elements.year.value = profile.year || '';
-            elements.gender.value = profile.gender || '';
-            elements.zodiac.value = profile.zodiac || '';
+            setChoice('gender', profile.gender || '');
+            setChoice('zodiac', profile.zodiac || '');
             syncBirthInfo({ autoPickZodiac: !profile.zodiac });
             setSaveStatus('โหลดข้อมูลเดิมแล้ว', true);
           };
@@ -453,7 +533,7 @@
           profile.day, profile.month, profile.year,
           calculateAge(birthDate), birthDate.getDay(),
           GENDER_CODES[profile.gender] || 0,
-          elements.zodiac.selectedIndex,
+          zodiacIndexOf(profile.zodiac) + 1,
           todayKey(), round,
         ].join('|');
 
@@ -598,10 +678,27 @@
           saveProfile();
         })
       );
-      [elements.gender, elements.zodiac].forEach(input => input.addEventListener('change', saveProfile));
+      [elements.genderChoices, elements.zodiacChoices].forEach(group => group.addEventListener('change', saveProfile));
       elements.form.addEventListener('submit', handleSpin);
       elements.copyButton.addEventListener('click', handleCopy);
 
+      /* ---------- Mobile app behavior ---------- */
+
+      function preventMobileZoom() {
+        document.addEventListener('gesturestart', event => event.preventDefault());
+        document.addEventListener('touchmove', event => {
+          if (event.touches.length > 1) event.preventDefault();
+        }, { passive: false });
+      }
+
+      function registerServiceWorker() {
+        if (!('serviceWorker' in navigator)) return;
+        navigator.serviceWorker.register('./sw.js').catch(error => console.warn('Service worker registration failed:', error));
+      }
+
+      preventMobileZoom();
+      registerServiceWorker();
+      renderChoices();
       buildReels();
       renderHistory();
       loadProfile();
