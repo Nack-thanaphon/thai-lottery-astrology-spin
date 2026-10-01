@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'lucky-spin-v1';
+const CACHE_VERSION = 'lucky-spin-v2';
 const APP_SHELL = [
   './',
   './index.html',
