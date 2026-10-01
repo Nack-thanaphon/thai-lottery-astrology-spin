@@ -71,6 +71,11 @@
     @keyframes flip { 0% { transform: translateY(0) rotateX(0); } 50% { transform: translateY(-6px) rotateX(90deg); } 100% { transform: translateY(0) rotateX(180deg); } }
     .result-caption { position: relative; z-index: 1; max-width: 430px; color: #bdb5aa; line-height: 1.7; }
     .result-caption b { color: var(--white); }
+    .number-groups { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 0 0 25px; }
+    .result-group { padding: 12px 10px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.13); border-radius: 10px; }
+    .result-group span { display: block; color: #bdb5aa; font-size: 11px; }
+    .result-group strong { display: block; margin-top: 3px; color: #f5c3a7; font-family: 'DM Mono', monospace; font-size: 25px; font-weight: 500; letter-spacing: .04em; }
+    .result-group.main { background: rgba(180,76,53,.22); border-color: rgba(245,195,167,.3); }
     .meta-row { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 27px; }
     .tag { padding: 7px 10px; color: #d9cfc2; border: 1px solid rgba(255,255,255,.16); border-radius: 999px; font-size: 12px; }
     .history { grid-column: 1 / -1; padding: 21px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
@@ -116,6 +121,11 @@
       <section class="card result-card" aria-live="polite" aria-labelledby="result-title">
         <div class="result-top"><span id="result-title" class="mono">YOUR LUCKY SET</span><strong id="result-date">ยังไม่ได้หมุน</strong></div>
         <div class="numbers" id="numbers"><span class="number">?</span><span class="number">?</span><span class="number">?</span><span class="number">?</span><span class="number">?</span><span class="number">?</span></div>
+        <div class="number-groups">
+          <div class="result-group main"><span>เลข 2 ตัวท้าย</span><strong id="two-digit">--</strong></div>
+          <div class="result-group"><span>เลข 3 ตัวหน้า</span><strong id="three-front">---</strong></div>
+          <div class="result-group"><span>เลข 3 ตัวท้าย</span><strong id="three-back">---</strong></div>
+        </div>
         <p class="result-caption" id="result-caption">กรอกข้อมูล แล้วกดหมุนเลข</p>
         <div class="meta-row" id="meta-row"><span class="tag">ยังไม่มีข้อมูล</span></div>
       </section>
@@ -128,6 +138,9 @@
     const form = document.querySelector('#lottery-form');
     const button = document.querySelector('#spin-button');
     const numbersEl = document.querySelector('#numbers');
+    const twoDigitEl = document.querySelector('#two-digit');
+    const threeFrontEl = document.querySelector('#three-front');
+    const threeBackEl = document.querySelector('#three-back');
     const caption = document.querySelector('#result-caption');
     const dateEl = document.querySelector('#result-date');
     const meta = document.querySelector('#meta-row');
@@ -219,7 +232,7 @@
       button.querySelector('span').textContent = 'กำลังหมุน...';
       digitNodes.forEach(node => node.classList.add('is-spinning'));
       let ticks = 0;
-      const interval = setInterval(() => { digitNodes.forEach(node => node.textContent = Math.floor(Math.random() * 10)); ticks++; if (ticks > 10) { clearInterval(interval); digitNodes.forEach((node, i) => { node.classList.remove('is-spinning'); node.textContent = result.out[i]; }); button.disabled = false; button.querySelector('span').textContent = 'หมุนใหม่อีกครั้ง'; const set = result.out.join(''); history.unshift(set); if (history.length > 5) history.pop(); dateEl.textContent = formatDate(); caption.innerHTML = `คำนวณแบบโหราศาสตร์ไทยฉบับขำๆ จากวันเกิด <b>${values.day}/${values.month}/${values.year}</b> อายุ ${values.age} ปี เพศ ${values.gender} และนักษัตร ${values.zodiac}`; meta.innerHTML = `<span class="tag">หวยไทย 6 หลัก</span><span class="tag">โหราศาสตร์ไทย</span><span class="tag">อายุ ${values.age} ปี</span><span class="tag">${values.zodiac}</span>`; renderHistory(); } }, 90);
+      const interval = setInterval(() => { digitNodes.forEach(node => node.textContent = Math.floor(Math.random() * 10)); ticks++; if (ticks > 10) { clearInterval(interval); digitNodes.forEach((node, i) => { node.classList.remove('is-spinning'); node.textContent = result.out[i]; }); twoDigitEl.textContent = result.out.slice(-2).join(''); threeFrontEl.textContent = result.out.slice(0, 3).join(''); threeBackEl.textContent = result.out.slice(-3).join(''); button.disabled = false; button.querySelector('span').textContent = 'หมุนใหม่อีกครั้ง'; const set = result.out.join(''); history.unshift(set); if (history.length > 5) history.pop(); dateEl.textContent = formatDate(); caption.innerHTML = `คำนวณแบบโหราศาสตร์ไทยฉบับขำๆ จากวันเกิด <b>${values.day}/${values.month}/${values.year}</b> อายุ ${values.age} ปี เพศ ${values.gender} และนักษัตร ${values.zodiac}`; meta.innerHTML = `<span class="tag">หวยไทย 6 หลัก</span><span class="tag">โหราศาสตร์ไทย</span><span class="tag">อายุ ${values.age} ปี</span><span class="tag">${values.zodiac}</span>`; renderHistory(); } }, 90);
     });
   </script>
 </body>
